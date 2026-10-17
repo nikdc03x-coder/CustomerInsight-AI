@@ -1,0 +1,4 @@
+algorithm,clusters_original,silhouette_original,coverage_original,clusters_reproduced,silhouette_reproduced,coverage_reproduced,_merge,clusters_match,coverage_match,silhouette_difference,silhouette_match,reproduced_successfully
+Agglomerative,4,0.2705535150344624,1.0,4,0.2705535150344624,1.0,both,True,True,0.0,True,True
+DBSCAN,2,0.2898036736122255,0.9818,2,0.2898036736122255,0.9818,both,True,True,0.0,True,True
+K-Means,4,0.3323721293344987,1.0,4,0.3323721293344987,1.0,both,True,True,0.0,True,True

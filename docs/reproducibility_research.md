@@ -149,3 +149,60 @@ the experimental function's side effects.
 
 The restoration does not yet establish
 numerical reproducibility.
+
+## Phase 04 — Clustering Reproduction
+
+### Objective
+
+Determine whether the original clustering comparison
+can be reproduced from the saved customer RFM dataset.
+
+### Dataset
+
+- Customer RFM dataset: 4,338 customers
+- Features: Recency, Frequency and Monetary
+
+### Methods
+
+- Log1p transformation
+- StandardScaler
+- K-Means: K=4, random_state=42, n_init=10
+- Agglomerative Clustering: K=4
+- DBSCAN: eps=0.5, min_samples=10
+- Silhouette evaluation: up to 2,000 observations
+- Silhouette sampling seed: 42
+
+### Verification Method
+
+The original clustering experiment function was
+executed again using the processed RFM dataset.
+
+Results were compared against the original
+clustering_baseline.csv.
+
+We checked:
+
+1. Number of clusters
+2. Customer coverage
+3. Silhouette score within numerical tolerance
+
+### Actual Results
+
+K-Means: Pending reproduction output.
+
+Agglomerative: Pending reproduction output.
+
+DBSCAN: Pending reproduction output.
+
+### Interpretation
+
+To be completed using the actual reproduction results.
+
+### Limitations
+
+Passing this comparison would establish agreement
+for the tested configuration in the current environment.
+
+It would not independently establish correct
+customer-segment labels or reproducibility
+across different operating systems and environments.
