@@ -451,3 +451,22 @@ separate confirmation.
 
 Clean-environment and raw-transaction
 reproduction remain unverified.
+
+### Customer Profile Verification
+
+The four baseline customer profiles were
+reconstructed from the processed RFM dataset
+using the existing K-Means implementation.
+
+The reconstructed customer counts and median
+RFM measurements were compared against the
+saved Phase 06 research profiles.
+
+Numerical agreement: [record actual outcome]
+
+This verification concerns customer group
+summaries in the current environment.
+
+It does not independently reproduce
+the original transaction-cleaning pipeline
+or establish business validity.

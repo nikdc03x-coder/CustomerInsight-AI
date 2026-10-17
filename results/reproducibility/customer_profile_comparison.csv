@@ -1,0 +1,5 @@
+cluster,customers_original,median_recency_original,median_frequency_original,median_monetary_original,customers_reproduced,median_recency_reproduced,median_frequency_reproduced,median_monetary_reproduced,_merge,matches,customers_difference,median_recency_difference,median_frequency_difference,median_monetary_difference
+0,877,19.0,2.0,450.84,877,19.0,2.0,450.84,both,True,0,0.0,0.0,0.0
+1,1579,183.0,1.0,300.42,1579,183.0,1.0,300.42,both,True,0,0.0,0.0,0.0
+2,720,9.0,10.0,3726.08,720,9.0,10.0,3726.08,both,True,0,0.0,0.0,0.0
+3,1162,54.0,4.0,1353.74,1162,54.0,4.0,1353.74,both,True,0,0.0,0.0,0.0
