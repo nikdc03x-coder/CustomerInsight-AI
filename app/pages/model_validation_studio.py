@@ -7,6 +7,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from dashboard_ui import page_header, show_chart
+
 from k2_diagnostics import show_k2_diagnostics
 
 
@@ -248,12 +250,12 @@ def compare_at_k(data):
 
 
 def main():
-    st.title("Model Validation Studio")
-    st.caption("RESEARCH / PHASE 08 — PARAMETER SENSITIVITY")
-
-    st.write(
-        "Explore how K-Means results change when we adjust "
-        "the number of groups and the preprocessing method."
+    page_header(
+        'Research & evidence / Model choices', 'Model validation',
+        'Explore how different model settings change the customer groups, and why a high score needs context.',
+        purpose='Compare preprocessing methods and group counts, examine the two-group result and download the saved experiments.',
+        benefit='See whether an apparent improvement reflects useful differentiation or a small group of exceptional purchasers.',
+        technical='K is the number of groups. Silhouette measures separation, ARI measures agreement with the baseline, and inertia measures within-group squared distances.',
     )
 
     if not RESULTS_FILE.is_file():
@@ -336,7 +338,7 @@ def main():
         else:
             figure = create_chart(filtered, metric, chart_type)
 
-            st.plotly_chart(
+            show_chart(
                 figure,
                 width="stretch",
                 config={"displaylogo": False},

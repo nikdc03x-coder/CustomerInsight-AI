@@ -7,6 +7,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from dashboard_ui import page_header, show_chart
+
 
 ROOT = Path(__file__).resolve().parents[2]
 RFM_FILE = ROOT / "data/processed/customer_rfm.csv"
@@ -63,12 +65,12 @@ def interpretation(title, meaning, finding, limitation):
 
 
 def main():
-    st.title("RFM Intelligence")
-    st.caption("RESEARCH / PHASE 03 — FEATURE ENGINEERING")
-
-    st.write(
-        "Understand how historical retail purchases were transformed "
-        "into three measurable customer behaviour features."
+    page_header(
+        'Customer insights / Purchasing patterns', 'Purchasing patterns',
+        'See when customers last purchased, how often they return and how much they spend.',
+        purpose='Explore RFM distributions, compare features, inspect individual customer records and download the feature table.',
+        benefit='Understand the measures used to form customer groups, including typical values and unusual purchasing patterns.',
+        technical='RFM means Recency, Frequency and Monetary. Frequency counts distinct qualifying invoices; monetary is gross positive spending in GBP.',
     )
 
     if not RFM_FILE.is_file():
@@ -192,7 +194,7 @@ def main():
             showlegend=False,
         )
 
-        st.plotly_chart(fig, width="stretch")
+        show_chart(fig, width="stretch")
 
         median = customers[metric].median()
         q1 = customers[metric].quantile(0.25)
@@ -247,7 +249,7 @@ def main():
                 hover_data=["customer_id"],
             )
 
-            st.plotly_chart(fig, width="stretch")
+            show_chart(fig, width="stretch")
 
             # Spearman measures monotonic association, not causation.
             correlation = customers[
@@ -283,7 +285,7 @@ def main():
             title="Spearman correlations between RFM features",
         )
 
-        st.plotly_chart(heatmap, width="stretch")
+        show_chart(heatmap, width="stretch")
 
         st.caption(
             "Correlation values range from -1 to +1. "

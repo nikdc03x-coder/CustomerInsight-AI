@@ -7,6 +7,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from dashboard_ui import show_chart
+
 
 # Find the project root and saved experimental results.
 ROOT = Path(__file__).resolve().parents[1]
@@ -293,7 +295,7 @@ def show_k2_diagnostics(key_prefix="k2_diagnostics"):
     )
 
     # Unique and stable chart key.
-    st.plotly_chart(
+    show_chart(
         fig,
         width="stretch",
         key=f"{prefix}_customer_distribution_chart",
@@ -325,7 +327,7 @@ def show_k2_diagnostics(key_prefix="k2_diagnostics"):
         margin=dict(l=20, r=20, t=60, b=20),
     )
 
-    st.plotly_chart(
+    show_chart(
         share_chart,
         width="stretch",
         key=f"{prefix}_customer_share_chart",
@@ -383,7 +385,7 @@ def show_k2_diagnostics(key_prefix="k2_diagnostics"):
         textposition="outside",
     )
 
-    st.plotly_chart(
+    show_chart(
         comparison,
         width="stretch",
         key=f"{prefix}_rfm_comparison_chart",

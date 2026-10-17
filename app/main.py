@@ -4,56 +4,42 @@ from pathlib import Path
 
 import streamlit as st
 
+from dashboard_ui import DESTINATIONS, brand
+
 
 APP_DIR = Path(__file__).resolve().parent
 
 
 def main():
-    """Present the implemented research pages in workflow order."""
+    """Keep every existing workspace one click from the dashboard or sidebar."""
     st.set_page_config(
-        page_title="CustomerInsight AI",
-        page_icon=":material/analytics:",
-        layout="wide",
+        page_title="CustomerInsight AI", page_icon=":material/monitoring:",
+        layout="wide", initial_sidebar_state="auto",
     )
-    sections = {
-        "Research Overview": [
-            st.Page(
-                str(APP_DIR / "pages/research_overview.py"),
-                title="Research Overview", icon=":material/dashboard:",
-            ),
-        ],
-        "Understand the Data": [
-            st.Page(
-                str(APP_DIR / "pages/retail_data_explorer.py"),
-                title="Retail Data Explorer", icon=":material/database:",
-            ),
-            st.Page(
-                str(APP_DIR / "pages/rfm_intelligence.py"),
-                title="RFM Intelligence", icon=":material/analytics:",
-            ),
-        ],
-        "Customer Intelligence": [
-            st.Page(
-                str(APP_DIR / "customer_insights.py"),
-                title="Customer Behaviour Explorer", icon=":material/groups:",
-            ),
-        ],
-        "Research Evidence": [
-            st.Page(
-                str(APP_DIR / "pages/research_findings.py"),
-                title="Model Comparison & Stability", icon=":material/science:",
-            ),
-            st.Page(
-                str(APP_DIR / "pages/model_validation_studio.py"),
-                title="Model Validation Studio", icon=":material/tune:",
-            ),
-            st.Page(
-                str(APP_DIR / "pages/research_health.py"),
-                title="Research Quality Center", icon=":material/fact_check:",
-            ),
-        ],
-    }
-    st.navigation(sections, position="sidebar").run()
+    brand()
+    by_key = {destination["key"]: destination for destination in DESTINATIONS}
+
+    def page(key):
+        destination = by_key[key]
+        return st.Page(
+            str(APP_DIR / destination["path"]),
+            title=destination["title"], icon=destination["icon"],
+        )
+
+    selected = st.navigation({
+        "Workspace": [st.Page(
+            str(APP_DIR / "pages/research_overview.py"),
+            title="Dashboard", icon=":material/space_dashboard:", default=True,
+        )],
+        "Customer insights": [page("retail"), page("rfm"), page("customers")],
+        "Research & evidence": [page("comparison"), page("validation"), page("quality")],
+    }, position="sidebar")
+    st.session_state["_ci_navigation_ready"] = True
+    selected.run()
+    with st.sidebar:
+        st.divider()
+        st.caption("UCI ONLINE RETAIL")
+        st.caption("Explore historical purchasing patterns. Group descriptions reflect recorded behaviour.")
 
 
 if __name__ == "__main__":

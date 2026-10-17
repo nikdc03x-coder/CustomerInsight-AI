@@ -7,6 +7,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from dashboard_ui import page_header, show_chart
+
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW_FILE = ROOT / "data/raw/Online Retail.xlsx"
@@ -35,13 +37,12 @@ def describe_result(title, meaning, finding, limitation):
 
 
 def main():
-    st.title("Retail Data Explorer")
-    st.caption("RESEARCH / PHASE 02 — DATA EXPLORATION")
-
-    st.write(
-        "Investigate the original retail transactions, discover "
-        "purchasing patterns and understand data quality before "
-        "customer segmentation."
+    page_header(
+        'Customer insights / Source data', 'Retail data',
+        'Understand the transactions behind your analysis, from data quality to purchasing activity over time.',
+        purpose='Inspect missing information and cancellations, compare monthly activity and countries, and preview original records.',
+        benefit='Spot issues in the source data so you can interpret customer patterns with the right context.',
+        technical='A transaction row is a product line, not a customer. Sales charts use qualifying positive purchases, before refund reconciliation.',
     )
 
     if not RAW_FILE.is_file():
@@ -143,7 +144,7 @@ def main():
                 title="Source-data quality checks",
             )
             fig.update_layout(showlegend=False)
-            st.plotly_chart(fig, width="stretch")
+            show_chart(fig, width="stretch")
         else:
             fig = px.bar(
                 quality,
@@ -154,7 +155,7 @@ def main():
                 title="Source-data quality checks",
             )
             fig.update_layout(showlegend=False)
-            st.plotly_chart(fig, width="stretch")
+            show_chart(fig, width="stretch")
 
         largest = quality.loc[quality["Rows"].idxmax()]
 
@@ -228,7 +229,7 @@ def main():
             hovermode="x unified",
         )
 
-        st.plotly_chart(fig, width="stretch")
+        show_chart(fig, width="stretch")
 
         if not trend.empty:
             peak = trend.loc[trend[measure].idxmax()]
@@ -280,7 +281,7 @@ def main():
             yaxis_title="Country",
         )
 
-        st.plotly_chart(fig, width="stretch")
+        show_chart(fig, width="stretch")
 
         if not subset.empty:
             leader = subset.iloc[0]

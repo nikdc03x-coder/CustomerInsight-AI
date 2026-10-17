@@ -7,6 +7,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from dashboard_ui import page_header, show_chart
+
 
 ROOT = Path(__file__).resolve().parents[2]
 RESULTS = ROOT / "results/experiments"
@@ -127,7 +129,7 @@ def show_algorithm_analysis(algorithms):
     chart_type = chart_type or "Bar"
 
     fig = comparison_chart(algorithms, chart_type, metric)
-    st.plotly_chart(fig, width="stretch")
+    show_chart(fig, width="stretch")
 
     with st.container(border=True):
         st.markdown("#### What does this chart tell us?")
@@ -257,7 +259,7 @@ def show_stability_analysis(summary, runs):
     )
 
     fig = stability_chart(summary, runs, mode)
-    st.plotly_chart(fig, width="stretch")
+    show_chart(fig, width="stretch")
 
     most_stable = summary.loc[summary["mean"].idxmax()]
     least_stable = summary.loc[summary["mean"].idxmin()]
@@ -309,19 +311,12 @@ def show_stability_analysis(summary, runs):
 
 
 def main():
-    st.set_page_config(
-        page_title="CustomerInsight AI | Research Findings",
-        page_icon="🔬",
-        layout="wide",
-    )
-
-    st.title("Research Findings")
-    st.caption("CustomerInsight AI / Scientific evaluation")
-
-    st.write(
-        "Discover how our machine learning models were compared, "
-        "what the experiments revealed and which questions "
-        "still remain unanswered."
+    page_header(
+        "Research & evidence / Comparison", "Comparison & stability",
+        "Compare the clustering methods, then see how consistently they group the same customers.",
+        purpose="Compare separation and coverage across three algorithms, explore repeated stability runs and inspect the research method.",
+        benefit="Understand the strengths and limits of each result before choosing a customer segmentation approach.",
+        technical="Silhouette measures separation; coverage reports how many customers are assigned. Adjusted Rand Index (ARI) measures agreement with a reference partition, not accuracy against known customer labels.",
     )
 
     try:

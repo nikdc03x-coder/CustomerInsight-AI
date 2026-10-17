@@ -9,6 +9,8 @@ import plotly.express as px
 import sklearn
 import streamlit as st
 
+from dashboard_ui import page_header, show_chart
+
 from customerinsight.dashboard_audit import (
     run_consistency_checks,
     run_research_audit,
@@ -68,7 +70,7 @@ def show_integrity(audit):
             title="Research component status",
         )
         fig.update_layout(showlegend=False)
-        st.plotly_chart(fig, width="stretch")
+        show_chart(fig, width="stretch")
 
     with right:
         st.dataframe(
@@ -303,13 +305,12 @@ def show_reproducibility(audit, checks):
 def main():
     """Render the full Research Quality Center."""
 
-    st.title("Research Quality Center")
-    st.caption("CUSTOMERINSIGHT AI / EVIDENCE & REPRODUCIBILITY")
-
-    st.write(
-        "Understand which research outputs are available, "
-        "whether related results agree and how our "
-        "findings connect to their original evidence."
+    page_header(
+        'Research & evidence / Assurance', 'Research quality',
+        'Check the evidence behind the dashboard, see which results agree and understand what remains unverified.',
+        purpose='Inspect research-file integrity, compare related results, follow the evidence map and review reproduction requirements.',
+        benefit='Find missing or inconsistent evidence before using a result in a report or discussion.',
+        technical='Availability and consistency checks verify selected conditions. They do not establish scientific correctness, external validity or business impact.',
     )
 
     audit = run_research_audit(ROOT)

@@ -17,10 +17,11 @@ def validation_page(tmp_path, monkeypatch):
     root = Path(__file__).resolve().parents[1]
     app = tmp_path / "app"
     (app / "pages").mkdir(parents=True)
-    for name in ["k2_diagnostics.py", "pages/model_validation_studio.py"]:
+    for name in ["dashboard_ui.py", "k2_diagnostics.py", "pages/model_validation_studio.py"]:
         shutil.copy2(root / "app" / name, app / name)
     monkeypatch.syspath_prepend(str(app))
     monkeypatch.delitem(sys.modules, "k2_diagnostics", raising=False)
+    monkeypatch.delitem(sys.modules, "dashboard_ui", raising=False)
     results = tmp_path / "results/experiments"
     results.mkdir(parents=True)
     pd.DataFrame([
@@ -64,3 +65,39 @@ def test_validation_missing_results_stops_with_guidance(validation_page):
     assert not app.exception
     assert any("not available" in warning.value for warning in app.warning)
     assert not app.header
+
+
+def test_dashboard_registers_every_page_and_links_to_each_workspace(tmp_path, monkeypatch):
+    root = Path(__file__).resolve().parents[1]
+    app_dir = tmp_path / "app"
+    shutil.copytree(root / "app", app_dir, ignore=shutil.ignore_patterns("__pycache__"))
+    monkeypatch.syspath_prepend(str(app_dir))
+    monkeypatch.delitem(sys.modules, "dashboard_ui", raising=False)
+    app = AppTest.from_file(str(app_dir / "main.py"), default_timeout=20).run()
+    assert not app.exception
+    assert app.title[0].value == "Dashboard"
+    registered = {
+        Path(info["script_path"]).relative_to(app_dir).as_posix()
+        for info in app._registered_pages.values() if info.get("script_path")
+    }
+    assert registered == {
+        "pages/research_overview.py", "pages/retail_data_explorer.py",
+        "pages/rfm_intelligence.py", "customer_insights.py",
+        "pages/research_findings.py", "pages/model_validation_studio.py",
+        "pages/research_health.py",
+    }
+    assert len(app.get("page_link")) == 6
+    # Missing local research files must leave all workspaces accessible.
+    assert len(app.metric) == 4
+
+
+def test_chart_theme_preserves_values_and_series(monkeypatch):
+    import plotly.graph_objects as go
+    from dashboard_ui import show_chart
+
+    figure = go.Figure(go.Bar(x=["A", "B"], y=[12, 7], name="Customers"))
+    original = figure.to_plotly_json()["data"]
+    captured = []
+    monkeypatch.setattr("streamlit.plotly_chart", lambda chart, **kwargs: captured.append(chart))
+    show_chart(figure, width="stretch")
+    assert captured[0].to_plotly_json()["data"] == original

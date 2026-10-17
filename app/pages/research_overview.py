@@ -7,6 +7,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from dashboard_ui import page_header, section_header, show_chart, workspace_cards
+
 
 ROOT = Path(__file__).resolve().parents[2]
 RESULTS = ROOT / "results/experiments"
@@ -42,13 +44,13 @@ def explain(title, finding, method, limitation):
 
 
 def main():
-    st.title("CustomerInsight AI")
-    st.caption("RESEARCH OVERVIEW / UNSUPERVISED LEARNING")
-
-    st.write(
-        "Explore the complete research journey: from identifying "
-        "customer groups to evaluating their separation, stability "
-        "and sensitivity to model settings."
+    page_header(
+        "Workspace / Overview", "Dashboard",
+        "A clearer view of customer purchasing. Explore the patterns, understand the groups and examine the evidence behind them.",
+        purpose="Choose a workspace below or use the sidebar to reach every part of the project.",
+        benefit="Move from transactions to customer insight, with the research methods and supporting evidence always within reach.",
+        technical="This workspace uses historical UCI Online Retail data. Results describe recorded purchasing behaviour; they do not predict future purchases or establish business impact.",
+        home=True,
     )
 
     clustering = read_results(
@@ -95,140 +97,148 @@ def main():
     )
 
     cols[2].metric(
-        "Mean stability ARI",
+        "Stability (mean ARI)",
         f"{stability['mean'].mean():.3f}"
         if stability is not None else "Pending",
-        help="Unweighted average across the experiment types.",
+        help="Agreement with a reference grouping. This is the unweighted mean ARI across the experiment types; higher agreement does not prove correctness.",
     )
 
     cols[3].metric(
-        "Validation configurations",
+        "Model configurations",
         len(validation) if validation is not None else "Pending",
     )
 
+    st.caption("Snapshot of the saved research evidence. Use the workspaces below to explore the detail.")
+
+    workspace_cards()
     st.divider()
+    section_header(
+        "Research at a glance",
+        "A quick view of the existing experiments. Open a research workspace for the full comparison and methods.",
+    )
+    comparison, agreement, sensitivity, groups = st.tabs([
+        "Algorithm comparison", "Assignment stability", "Model sensitivity", "Customer groups",
+    ])
 
-    st.subheader("1. Which clustering algorithm performed best?")
+    with comparison:
+        st.subheader('How separated are the groups?')
 
-    if clustering is not None:
-        fig = px.bar(
-            clustering,
-            x="algorithm",
-            y="silhouette",
-            color="algorithm",
-            text_auto=".3f",
-            title="Baseline silhouette scores",
-        )
-        fig.update_layout(showlegend=False)
-        st.plotly_chart(fig, width="stretch")
+        if clustering is not None:
+            fig = px.bar(
+                clustering,
+                x="algorithm",
+                y="silhouette",
+                color="algorithm",
+                text_auto=".3f",
+                title="Baseline silhouette scores",
+            )
+            fig.update_layout(showlegend=False)
+            show_chart(fig, width="stretch")
 
-        best = clustering.loc[clustering["silhouette"].idxmax()]
+            best = clustering.loc[clustering["silhouette"].idxmax()]
 
-        explain(
-            "What did we discover?",
-            f"{best['algorithm']} had the highest silhouette "
-            f"score ({best['silhouette']:.4f}) among the "
-            "tested baseline configurations.",
-            "Silhouette score measures how closely observations "
-            "match their own cluster relative to other clusters.",
-            "This does not prove the algorithm is universally "
-            "best. DBSCAN's score also excludes noise observations.",
-        )
-    else:
-        st.info("Baseline clustering results are not available.")
+            explain(
+                "What did we discover?",
+                f"{best['algorithm']} had the highest silhouette "
+                f"score ({best['silhouette']:.4f}) among the "
+                "tested baseline configurations.",
+                "Silhouette score measures how closely observations "
+                "match their own cluster relative to other clusters.",
+                "This does not prove the algorithm is universally "
+                "best. DBSCAN's score also excludes noise observations.",
+            )
+        else:
+            st.info("Baseline clustering results are not available.")
 
-    st.divider()
+    with agreement:
+        st.subheader('How consistent are the assignments?')
 
-    st.subheader("2. How stable are the customer groups?")
+        if stability is not None:
+            fig = px.bar(
+                stability,
+                x="experiment",
+                y="mean",
+                error_y="std",
+                text_auto=".3f",
+                title="Average ARI with standard-deviation bars",
+            )
+            fig.update_yaxes(
+                title="Mean Adjusted Rand Index",
+            )
+            show_chart(fig, width="stretch")
 
-    if stability is not None:
-        fig = px.bar(
-            stability,
-            x="experiment",
-            y="mean",
-            error_y="std",
-            text_auto=".3f",
-            title="Average ARI with standard-deviation bars",
-        )
-        fig.update_yaxes(
-            title="Mean Adjusted Rand Index",
-        )
-        st.plotly_chart(fig, width="stretch")
+            explain(
+                "What did we discover?",
+                "The bars show average agreement with the baseline "
+                "for random initialization, training subsets "
+                "and feature noise.",
+                "Each experiment compares resulting customer "
+                "assignments with a reference partition using ARI. "
+                "Error bars represent standard deviations, "
+                "not confidence intervals.",
+                "High agreement is evidence of stability under "
+                "the tested conditions, not proof of correctness.",
+            )
+        else:
+            st.info("Stability experiment results are not available.")
 
-        explain(
-            "What did we discover?",
-            "The bars show average agreement with the baseline "
-            "for random initialization, training subsets "
-            "and feature noise.",
-            "Each experiment compares resulting customer "
-            "assignments with a reference partition using ARI. "
-            "Error bars represent standard deviations, "
-            "not confidence intervals.",
-            "High agreement is evidence of stability under "
-            "the tested conditions, not proof of correctness.",
-        )
-    else:
-        st.info("Stability experiment results are not available.")
+    with sensitivity:
+        st.subheader('What changes with model settings?')
 
-    st.divider()
+        if validation is not None:
+            fig = px.line(
+                validation,
+                x="clusters",
+                y="silhouette",
+                color="preprocessing",
+                markers=True,
+                title="Sensitivity to cluster count and preprocessing",
+            )
+            fig.update_xaxes(dtick=1)
+            show_chart(fig, width="stretch")
 
-    st.subheader("3. Does changing K affect the results?")
+            explain(
+                "What question does this answer?",
+                "This experiment compares the separation of "
+                "customer groups across cluster counts and "
+                "feature preprocessing approaches.",
+                "Each point represents an evaluated model "
+                "configuration recorded in Phase 08.",
+                "The best silhouette score is not necessarily "
+                "the most useful segmentation for a retailer.",
+            )
+        else:
+            st.info(
+                "Model validation results are pending. "
+                "Run the Phase 08 notebook to generate them."
+            )
 
-    if validation is not None:
-        fig = px.line(
-            validation,
-            x="clusters",
-            y="silhouette",
-            color="preprocessing",
-            markers=True,
-            title="Sensitivity to cluster count and preprocessing",
-        )
-        fig.update_xaxes(dtick=1)
-        st.plotly_chart(fig, width="stretch")
+    with groups:
+        st.subheader('How many customers are in each group?')
 
-        explain(
-            "What question does this answer?",
-            "This experiment compares the separation of "
-            "customer groups across cluster counts and "
-            "feature preprocessing approaches.",
-            "Each point represents an evaluated model "
-            "configuration recorded in Phase 08.",
-            "The best silhouette score is not necessarily "
-            "the most useful segmentation for a retailer.",
-        )
-    else:
-        st.info(
-            "Model validation results are pending. "
-            "Run the Phase 08 notebook to generate them."
-        )
+        if profiles is not None:
+            fig = px.bar(
+                profiles,
+                x="cluster",
+                y="customers",
+                text_auto=True,
+                title="Customers assigned to each cluster",
+            )
+            show_chart(fig, width="stretch")
 
-    st.divider()
-
-    st.subheader("4. What do the discovered customer groups look like?")
-
-    if profiles is not None:
-        fig = px.bar(
-            profiles,
-            x="cluster",
-            y="customers",
-            text_auto=True,
-            title="Customers assigned to each cluster",
-        )
-        st.plotly_chart(fig, width="stretch")
-
-        explain(
-            "What does this show?",
-            "The chart shows the population size of each "
-            "machine-learning-discovered customer group.",
-            "Group sizes are calculated from customer-level "
-            "cluster assignments.",
-            "Cluster numbers are identifiers, not quality rankings.",
-        )
-    else:
-        st.info(
-            "Customer group profiles are pending. "
-            "Run the Phase 06 explainability notebook."
-        )
+            explain(
+                "What does this show?",
+                "The chart shows the population size of each "
+                "machine-learning-discovered customer group.",
+                "Group sizes are calculated from customer-level "
+                "cluster assignments.",
+                "Cluster numbers are identifiers, not quality rankings.",
+            )
+        else:
+            st.info(
+                "Customer group profiles are pending. "
+                "Run the Phase 06 explainability notebook."
+            )
 
     st.divider()
 

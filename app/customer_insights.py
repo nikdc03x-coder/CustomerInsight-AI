@@ -8,6 +8,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from dashboard_ui import page_header, show_chart
+
 from customerinsight.explanations import assign_customer_clusters
 
 
@@ -56,67 +58,6 @@ COLORS = {
     "Group C": "#9770D2",
     "Group D": "#E0A04B",
 }
-
-
-def apply_design():
-    """Apply a small amount of styling without replacing Streamlit widgets."""
-
-    st.markdown(
-        """
-        <style>
-        .block-container {
-            max-width: 1440px;
-            padding-top: 2rem;
-            padding-bottom: 4rem;
-        }
-
-        h1, h2, h3 {
-            letter-spacing: -0.035em;
-        }
-
-        h1 {
-            font-weight: 750;
-        }
-
-        [data-testid="stMetric"] {
-            padding: 1.1rem;
-            border: 1px solid rgba(130,140,160,.20);
-            border-radius: 14px;
-        }
-
-        [data-testid="stMetricLabel"] {
-            font-weight: 500;
-        }
-
-        [data-testid="stMetricValue"] {
-            font-weight: 700;
-        }
-
-        div[data-testid="stVerticalBlockBorderWrapper"] {
-            border-radius: 14px;
-        }
-
-        div.stButton button {
-            border-radius: 10px;
-        }
-
-        .section-caption {
-            font-size: .79rem;
-            letter-spacing: .11em;
-            text-transform: uppercase;
-            color: #0D9488;
-            font-weight: 700;
-            margin-bottom: .35rem;
-        }
-
-        .insight-lead {
-            font-size: 1.05rem;
-            line-height: 1.75;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
 
 
 @st.cache_data(show_spinner="Analysing customer behaviour...")
@@ -609,14 +550,13 @@ def group_comparison(customers):
 
 
 def main():
-    st.set_page_config(
-        page_title="CustomerInsight AI | Behaviour Intelligence",
-        page_icon="📊",
-        layout="wide",
-        initial_sidebar_state="expanded",
+    page_header(
+        "Customer insights / Customer groups", "Customer behaviour",
+        "Compare customer groups and turn purchasing statistics into understandable patterns.",
+        purpose="Filter customer groups, explore nine chart styles, read group profiles, compare two groups and export the selected records.",
+        benefit="Understand how groups differ without having to interpret transformed model inputs or clustering code.",
+        technical="Four K-Means clusters use RFM features. Group letters are display identifiers ordered by median spending; they are not rankings of loyalty or profitability.",
     )
-
-    apply_design()
 
     try:
         customers = load_data()
@@ -634,11 +574,7 @@ def main():
 
     # Keep global filters in the sidebar so the content stays uncluttered.
     with st.sidebar:
-        st.title("CustomerInsight AI")
-        st.caption("Research-driven customer intelligence")
-        st.divider()
-
-        st.subheader("Explore your data")
+        st.subheader("Filter customer groups")
 
         chosen_groups = st.multiselect(
             "Customer groups",
@@ -665,19 +601,6 @@ def main():
     selected = customers[
         customers["group"].isin(chosen_groups)
     ].copy()
-
-    st.markdown(
-        '<div class="section-caption">Customer intelligence / '
-        'Research workspace</div>',
-        unsafe_allow_html=True,
-    )
-
-    st.title("Understand Your Customers")
-
-    st.write(
-        "Explore real purchasing behaviour, compare customer groups "
-        "and understand the evidence behind each insight."
-    )
 
     overview = st.columns(4)
 
@@ -736,7 +659,7 @@ def main():
 
         figure = build_figure(selected, metric, chart_type)
 
-        st.plotly_chart(
+        show_chart(
             figure,
             width="stretch",
             config={"displaylogo": False},
