@@ -1,0 +1,4 @@
+experiment,mean,std,min,max
+Feature noise,0.9172,0.02,0.8756,0.9408
+Random initialization,0.936,0.0298,0.9132,1.0
+Training subset,0.9413,0.0381,0.884,0.9942

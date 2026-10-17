@@ -70,7 +70,7 @@ def test_resampling(
 
     # All models are evaluated on the same full customer population.
     reference = fit_kmeans(features, clusters=clusters)
-    reference_labels = reference.predict(values)
+    reference_labels = reference.predict(features)
 
     results = []
 
@@ -90,7 +90,7 @@ def test_resampling(
         )
 
         # Predict the same customers using the newly trained model.
-        labels = model.predict(values)
+        labels = model.predict(features)
 
         results.append({
             "experiment": "Training subset",

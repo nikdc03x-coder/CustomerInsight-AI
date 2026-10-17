@@ -98,21 +98,89 @@ that the groups represent true customer categories.
 
 ## 7. Experimental results
 
-Complete after running the research notebook.
+We conducted three experiments to investigate
+the stability of K-Means customer segmentation.
+
+Each experiment was repeated 20 times.
 
 | Experiment            | Mean ARI | Std. deviation | Minimum | Maximum |
 | --------------------- | -------: | -------------: | ------: | ------: |
-| Random initialization |  Pending |        Pending | Pending | Pending |
-| Training subset       |  Pending |        Pending | Pending | Pending |
-| Feature noise         |  Pending |        Pending | Pending | Pending |
+| Random initialization |   0.9360 |         0.0298 |  0.9132 |  1.0000 |
+| Training subset       |   0.9413 |         0.0381 |  0.8840 |  0.9942 |
+| Feature noise         |   0.9172 |         0.0200 |  0.8756 |  0.9408 |
 
 ## 8. Interpretation
 
-To be completed using actual observations.
+### Random initialization
 
-Discuss the differences between conditions,
-the consistency of repeated runs and the
-implications for customer segmentation.
+The average Adjusted Rand Index was 0.9360.
+
+This indicates that different model initializations
+generally produced cluster assignments similar
+to those of our reference model.
+
+The maximum score was 1.0000, indicating that
+at least one run matched the reference perfectly.
+
+### Training subset
+
+The average ARI was 0.9413, the highest among
+the three tested conditions.
+
+This suggests that the customer group assignments
+were generally consistent when K-Means was trained
+on different 80% subsets of the data.
+
+However, this experiment also had the highest
+standard deviation (0.0381), indicating greater
+variation between runs.
+
+### Feature noise
+
+The average ARI was 0.9172.
+
+This was the lowest mean agreement among the
+three experimental conditions.
+
+The result suggests that small changes to customer
+feature values can affect cluster assignments.
+
+However, agreement remained relatively high
+under the noise level tested.
+
+### Overall finding
+
+K-Means produced relatively consistent customer
+group assignments across the tested conditions.
+
+The mean ARI ranged from 0.9172 to 0.9413.
+
+These results provide preliminary evidence
+of clustering stability for this dataset and
+experimental configuration.
+
+They do not demonstrate that the clusters
+are objectively correct or meaningful to
+retail businesses.
+
+### Research limitations
+
+We evaluated a single historical retail dataset.
+
+All experiments used K-Means with four clusters.
+
+Only one training sample fraction and one
+feature noise level were tested.
+
+Our experiments held the preprocessing
+transformation fixed.
+
+The comparisons were made against a baseline
+clustering rather than verified customer labels.
+
+Further research should examine alternative
+cluster counts, preprocessing choices and
+different clustering algorithms.
 
 ## 9. Limitations
 
