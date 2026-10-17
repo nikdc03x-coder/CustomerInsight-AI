@@ -72,39 +72,41 @@ its silhouette calculation.
 
 ## Experiment results
 
-Complete this section using the actual output.
+We compared three clustering algorithms using
+customer-level RFM features.
 
 | Algorithm     | Clusters | Silhouette | Coverage |
 | ------------- | -------: | ---------: | -------: |
-| K-Means       |  Pending |    Pending |  Pending |
-| Agglomerative |  Pending |    Pending |  Pending |
-| DBSCAN        |  Pending |    Pending |  Pending |
+| K-Means       |        4 |   0.332372 |     100% |
+| Agglomerative |        4 |   0.270554 |     100% |
+| DBSCAN        |        2 |   0.289804 |   98.18% |
 
 ## Interpretation
 
-To be completed after executing the notebook.
+K-Means achieved the highest silhouette score
+among the three baseline configurations.
 
-Explain differences between the algorithms
-rather than only identifying the largest score.
+Agglomerative Clustering produced four clusters,
+but its silhouette score was lower than K-Means.
 
-Discuss whether the groupings appear understandable
-in relation to purchasing behaviour.
+DBSCAN identified two clusters and classified
+approximately 1.82% of observations as noise.
 
-## Limitations
+The DBSCAN silhouette calculation excluded noise,
+so its score is not directly equivalent to those
+of the other two algorithms.
 
-Only one dataset has been tested.
+These findings represent preliminary results.
+They do not establish that K-Means is universally
+better for customer segmentation.
 
-The baseline parameters were selected before
-systematic hyperparameter evaluation.
+## Research limitations
 
-Silhouette scores do not directly measure
-business value or explanation quality.
-
-DBSCAN may exclude noise observations when
-calculating its score.
-
-The experiment does not yet establish
-cluster stability across data samples.
+- Only one dataset was evaluated.
+- The algorithms used initial parameter settings.
+- Cluster stability has not yet been measured.
+- Business interpretability has not yet been validated.
+- Further experiments are needed before model selection.
 
 ## Implementation references
 
@@ -117,20 +119,8 @@ https://scikit-learn.org/stable/modules/preprocessing.html
 scikit-learn silhouette score:
 https://scikit-learn.org/stable/modules/generated/sklearn.metrics.silhouette_score.html
 
-## Next research phase
+## Next research question
 
-Test clustering stability under changing
-data samples, noise and parameter settings.
-
-Investigate whether discovered customer groups
-remain consistent.
-
-## Completion record
-
-Status: Pending experiment execution
-
-Tests: Pending verification
-
-Research findings: Pending
-
-Git commit: Pending
+How consistently do the algorithms identify
+customer groups when the data is resampled
+or the model parameters change?
