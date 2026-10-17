@@ -1,15 +1,15 @@
 # CustomerInsight AI: An Explainable and Stability-Aware Framework for Customer Behaviour Segmentation Using Unsupervised Machine Learning
 
 **Document type:** Research manuscript draft  
-**Status:** Revised research draft — automated validation verified; independent numerical reproduction outstanding  
+**Status:** Revised research draft — current-environment numerical comparisons verified; full clean-environment workflow outstanding
 **Research data:** UCI Online Retail, historical transactions from 2010–2011  
 **Last updated:** 17 October 2026
 
-> **Evidence note.** Numerical findings in this manuscript come from the experimental outputs reported for CustomerInsight AI. The project has passed 49 automated tests and four cross-file consistency checks, but complete notebook execution, independent numerical replication and external validation are not yet established. The literature review requires final verification against primary sources. Statements about possible explanations and business applications are clearly distinguished from measured findings.
+> **Evidence note.** Numerical findings in this manuscript come from the experimental outputs reported for CustomerInsight AI. The original project suite passed 49 tests and four cross-file checks. Current-environment comparisons reproduced three baseline configurations, 18 sensitivity configurations and four customer profiles from saved RFM. Complete notebook execution, clean-environment reproduction and external validation are not yet established. The literature review requires final verification against primary sources. Statements about possible explanations and business applications are clearly distinguished from measured findings.
 
 ## Abstract
 
-Customer segmentation aims to identify differences in purchasing behaviour that may assist exploratory retail analysis. This study investigates a reproducible, interpretable approach to segmentation using customer-level recency, frequency and monetary (RFM) features constructed from historical transactions in the UCI Online Retail dataset. Three unsupervised learning methods—K-Means, Agglomerative Clustering and DBSCAN—were evaluated in a baseline comparison. The four-cluster K-Means configuration achieved a silhouette score of **0.332372**, compared with **0.270554** for Agglomerative Clustering and **0.289804** for the evaluated DBSCAN configuration; the DBSCAN coverage was **98.18%**. Stability was assessed through 60 runs spanning random initialization, training-subset variation and feature noise, with mean adjusted Rand index (ARI) values of **0.9360**, **0.9413** and **0.9172**, respectively. The four-cluster solution described **4,338 customers** with different observed RFM profiles. A sensitivity study evaluated 18 K-Means configurations across two preprocessing approaches and cluster counts of 2–10. Although standard scaling with two clusters produced a high silhouette score (**0.891827**), a follow-up diagnostic found a highly imbalanced partition: **4,312 customers (99.40%)** in one group and **26 (0.60%)** in the other. This illustrates that high internal separation does not, by itself, establish useful broad segmentation. The project also includes an interactive research dashboard, 49 passing automated tests, and four passing cross-file consistency checks. A notebook audit identified three notebooks without executable code cells; the clustering notebook has since been restored, although fresh numerical reproduction remains pending. Findings are descriptive and restricted to the dataset, configurations and validation conditions studied.
+Customer segmentation aims to identify differences in purchasing behaviour that may assist exploratory retail analysis. This study investigates a reproducible, interpretable approach to segmentation using customer-level recency, frequency and monetary (RFM) features constructed from historical transactions in the UCI Online Retail dataset. Three unsupervised learning methods—K-Means, Agglomerative Clustering and DBSCAN—were evaluated in a baseline comparison. The four-cluster K-Means configuration achieved a silhouette score of **0.332372**, compared with **0.270554** for Agglomerative Clustering and **0.289804** for the evaluated DBSCAN configuration; the DBSCAN coverage was **98.18%**. Stability was assessed through 60 runs spanning random initialization, training-subset variation and feature noise, with mean adjusted Rand index (ARI) values of **0.9360**, **0.9413** and **0.9172**, respectively. The four-cluster solution described **4,338 customers** with different observed RFM profiles. A sensitivity study evaluated 18 K-Means configurations across two preprocessing approaches and cluster counts of 2–10. Although standard scaling with two clusters produced a high silhouette score (**0.891827**), a follow-up diagnostic found a highly imbalanced partition: **4,312 customers (99.40%)** in one group and **26 (0.60%)** in the other. This illustrates that high internal separation does not, by itself, establish useful broad segmentation. The project also includes an interactive research dashboard, 49 passing automated tests, and four passing cross-file consistency checks. The six research notebooks now contain executable code. Fresh comparisons from processed RFM matched all three baselines, all 18 sensitivity configurations and all four profiles in the current environment; a complete fresh-environment workflow remains unverified. Findings are descriptive and restricted to the dataset, configurations and validation conditions studied.
 
 **Keywords:** customer segmentation; RFM; K-Means; unsupervised learning; clustering stability; adjusted Rand index; silhouette score; explainable analytics; research reproducibility.
 
@@ -227,7 +227,7 @@ The project demonstrates the value of combining algorithm comparison, stability 
 6. **Metric limitations:** Silhouette and ARI quantify specific mathematical properties, not business usefulness or causal relationships.
 7. **Cluster-size imbalance:** The high-scoring K=2 model showed extreme imbalance. This is informative diagnostically but not a sufficient reason alone to reject it.
 8. **Incomplete external validation:** No prospective business experiment or independent retail dataset has verified the practical value of the groups.
-9. **Reproduction still pending:** The 49 passing automated tests and four passing consistency checks establish selected checks in the current environment, not complete regeneration of research outputs. Notebook audits identified three originally non-executable notebooks; one has since been restored without yet verifying experiment re-execution.
+9. **Reproduction boundary:** Current-environment comparisons matched the three baseline models, 18 sensitivity configurations and four customer profiles from processed RFM. These comparisons do not establish full raw-data-to-results regeneration in a clean environment or complete execution of all six notebooks.
 10. **Documentation gaps:** The precise data-cleaning counts, feature reference date, full stability perturbation settings, scholarly citation review and numerical reproduction reports still need to be incorporated before formal submission.
 
 ## 8. Conclusion
@@ -257,92 +257,45 @@ The findings are exploratory, dataset-specific and descriptive. They do not esta
 
 ## Appendix A. Computational Reproducibility and Quality Assurance
 
-### A.1 Project environment
+The current verification record is `docs/reproducibility_research.md`. It
+distinguishes fresh computations from inspection of historical saved artifacts.
 
-The research implementation uses Python and established packages including Pandas, NumPy, scikit-learn, Plotly and Streamlit. The project-generated environment record is `docs/research_environment.md`; the version information must be read directly from that file rather than inferred from the manuscript. The latest reported automated test session used a Python 3.12.6 virtual environment on Windows. This is the verification environment, not a claim that the complete study has been recreated on a separate machine.
+Fresh comparisons during cleanup matched all three baseline algorithms, all 18
+parameter-study configurations and all four customer profiles from the saved
+4,338-row RFM data. Baseline silhouette differences were zero; maximum observed
+parameter-study inertia difference was approximately 1.82e-12, below the absolute
+tolerance of 0.0001. Customer counts matched exactly; profile median tolerance was
+0.01. Original experiment evidence was preserved.
 
-### A.2 Baseline clustering settings verified from source code
+The original automated suite passed 49 tests. Seven research inputs passed basic
+availability/CSV checks, and all four implemented cross-file checks passed.
+Stored executed explainability and validation notebooks each contained eight
+executed code cells and no recorded errors. Those saved artifacts are historical
+execution evidence, not proof of fresh full-study reproduction.
 
-The source functions `prepare_clustering_features(rfm)` and `run_clustering_experiments(features)` were inspected directly. They specify:
+The feature-engineering notebook's missing RFM-construction step was repaired.
+The user's existing clustering-notebook modification was preserved. The current
+cleanup validation outcomes are recorded in the verification document rather
+than inferred from old notebook output counts.
 
-| Component                  | Verified implementation setting                                                  |
-| -------------------------- | -------------------------------------------------------------------------------- |
-| Features                   | Non-negative RFM values; `log1p` followed by `StandardScaler`                    |
-| K-Means                    | `n_clusters=4`, `random_state=42`, `n_init=10`                                   |
-| Agglomerative Clustering   | `n_clusters=4`; unspecified options use installed scikit-learn defaults          |
-| DBSCAN                     | `eps=0.5`, `min_samples=10`; unspecified options use installed defaults          |
-| Silhouette                 | At most 2,000 sampled observations; `random_state=42`                            |
-| DBSCAN handling            | Noise labels (`-1`) omitted from silhouette sample; coverage reported separately |
-| Experiment function output | `(results_dataframe, labels_by_model)`; no file writes within this function      |
-
-The settings above clarify the baseline implementation. They do not establish exact replication of the original measurements until a fresh rerun is compared with saved outputs.
-
-### A.3 Verified automated tests and cross-file consistency
-
-The latest reported project execution produced **49 passing pytest tests**, with **zero failures** (4.11 seconds). The four cross-file checks also passed:
-
-| Check                           | Reported status | Observed agreement                                        |
-| ------------------------------- | --------------- | --------------------------------------------------------- |
-| Customer coverage               | Passed          | Cluster profiles total 4,338 of 4,338 RFM customers       |
-| Stability statistics            | Passed          | Three summary rows agree with recalculated run statistics |
-| Stability run identifiers       | Passed          | 60 of 60 experiment/run identifiers unique                |
-| Model validation configurations | Passed          | 18 of 18 preprocessing/K combinations unique              |
-
-These checks support the internal integrity of stored evidence but are not substitutes for fresh notebook execution, dataset regeneration or external validation.
-
-### A.4 Notebook readiness audit
-
-The first audit identified six existing and structurally valid notebooks. At that point, three had no code cells. The clustering notebook was then restored, and a second audit reported the following:
-
-| Research notebook               | Code cells | Saved executed cells | Audit interpretation                            |
-| ------------------------------- | ---------: | -------------------: | ----------------------------------------------- |
-| `data_exploration.ipynb`        |          7 |                    0 | Re-execution pending                            |
-| `feature_engineering.ipynb`     |          7 |                    3 | Clean re-execution pending                      |
-| `clustering_experiments.ipynb`  |          5 |                    0 | Restored; fresh experiment reproduction pending |
-| `stability_analysis.ipynb`      |          6 |                    4 | Clean re-execution pending                      |
-| `customer_explainability.ipynb` |          0 |                    0 | Requires executable notebook restoration        |
-| `model_validation.ipynb`        |          0 |                    0 | Requires executable notebook restoration        |
-
-The audit was generated by `scripts/audit_notebook_reproducibility.py` and saved as `results/reproducibility/notebook_audit.csv`. Saved execution counts are a historical indication of notebook output, not evidence of successful fresh execution.
-
-### A.5 Saved research artifacts
-
-| Research stage           | Primary evidence                                                                                    |
-| ------------------------ | --------------------------------------------------------------------------------------------------- |
-| RFM feature construction | `data/processed/customer_rfm.csv`                                                                   |
-| Baseline clustering      | `results/experiments/clustering_baseline.csv`                                                       |
-| Stability experiments    | `results/experiments/stability_runs.csv`; `results/experiments/stability_summary.csv`               |
-| Cluster descriptions     | `results/experiments/customer_cluster_profiles.csv`                                                 |
-| Sensitivity study        | `results/experiments/model_validation_results.csv`; `results/experiments/model_validation_best.csv` |
-| K=2 investigation        | `results/experiments/k2_cluster_diagnostics.csv`                                                    |
-| Notebook audit           | `results/reproducibility/notebook_audit.csv`                                                        |
-| Verification log         | `docs/reproducibility_research.md`                                                                  |
-| Environment record       | `docs/research_environment.md`                                                                      |
-
-### A.6 Verification commands
-
-From the project root after activating the Python virtual environment:
+Normal numerical comparison commands, from the repository root:
 
 ```bash
 python -m pytest -q
-python scripts/audit_notebook_reproducibility.py
-python scripts/research_evidence_summary.py
-python -c "from pathlib import Path; from customerinsight.dashboard_audit import run_consistency_checks; print(run_consistency_checks(Path.cwd()).to_string(index=False))"
+python scripts/reproduce_clustering.py
+python scripts/reproduce_model_validation.py
+python scripts/verify_customer_profiles.py
+python scripts/verify_research_reproduction.py
 python -m streamlit run app/main.py
 ```
 
-The original experiment modules were inspected and have no direct file-writing side effect in `run_clustering_experiments`; however, complete clustering re-execution and a comparison against the saved baseline have **not yet been reported as completed**. If `scripts/reproduce_clustering.py` is implemented and run, its output should be reviewed, recorded and saved separately under `results/reproducibility/`, leaving the original baseline untouched.
+The first three numerical scripts require original local RFM and experiment
+files, and write comparison reports under `results/reproducibility/`. The final
+verification script inspects saved evidence; it does not rerun all models.
 
-### A.7 Remaining reproduction requirements
-
-1. Reproduce the clustering comparison numerically and record score differences against `clustering_baseline.csv`.
-2. Restore the Customer Explainability and Model Validation notebooks as executable research narratives.
-3. Execute all notebooks from a clean kernel without overwriting verified original experiment outputs.
-4. Check regenerated RFM data, customer profiles and stability/validation outputs against saved evidence.
-5. Record the RFM reference date, source-data inclusion counts and all remaining experiment parameters.
-6. Validate the literature citations against primary publications and document environment dependency versions.
-
-**Current conclusion:** File integrity, selected cross-file consistency and automated tests have been verified in the reported local environment. End-to-end numerical reproducibility and external validation remain outstanding.
+Complete clean-environment installation, all-six-notebook execution, a single
+raw-workbook-to-all-results workflow and external validation remain outstanding.
+See `docs/project_review.md` for architecture, cleanup rationale and limitations.
 
 ## Appendix B. Research Evidence and Traceability
 

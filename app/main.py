@@ -1,5 +1,4 @@
-
-"""Main navigation for the complete CustomerInsight AI dashboard."""
+"""Navigation for the CustomerInsight AI research dashboard."""
 
 from pathlib import Path
 
@@ -9,93 +8,52 @@ import streamlit as st
 APP_DIR = Path(__file__).resolve().parent
 
 
-def page_if_available(path, title, icon):
-    """Register a dashboard page if its Python file exists."""
-
-    file_path = APP_DIR / path
-
-    if not file_path.is_file():
-        return None
-
-    return st.Page(
-        str(file_path),
-        title=title,
-        icon=icon,
-    )
-
-
 def main():
-    """Organize the research into an understandable workflow."""
-
+    """Present the implemented research pages in workflow order."""
+    st.set_page_config(
+        page_title="CustomerInsight AI",
+        page_icon=":material/analytics:",
+        layout="wide",
+    )
     sections = {
         "Research Overview": [
-            page_if_available(
-                "pages/research_overview.py",
-                "Research Overview",
-                ":material/dashboard:",
+            st.Page(
+                str(APP_DIR / "pages/research_overview.py"),
+                title="Research Overview", icon=":material/dashboard:",
             ),
         ],
         "Understand the Data": [
-            page_if_available(
-                "pages/retail_data_explorer.py",
-                "Retail Data Explorer",
-                ":material/database:",
+            st.Page(
+                str(APP_DIR / "pages/retail_data_explorer.py"),
+                title="Retail Data Explorer", icon=":material/database:",
             ),
-            page_if_available(
-                "pages/rfm_intelligence.py",
-                "RFM Intelligence",
-                ":material/analytics:",
+            st.Page(
+                str(APP_DIR / "pages/rfm_intelligence.py"),
+                title="RFM Intelligence", icon=":material/analytics:",
             ),
         ],
         "Customer Intelligence": [
-            page_if_available(
-                "customer_insights.py",
-                "Customer Behaviour Explorer",
-                ":material/groups:",
+            st.Page(
+                str(APP_DIR / "customer_insights.py"),
+                title="Customer Behaviour Explorer", icon=":material/groups:",
             ),
         ],
-      
-"Research Evidence": [
-    page_if_available(
-        "pages/research_findings.py",
-        "Model Comparison & Stability",
-        ":material/science:",
-    ),
-    page_if_available(
-        "pages/model_validation_studio.py",
-        "Model Validation Studio",
-        ":material/tune:",
-    ),
-    
-
-page_if_available(
-    "pages/research_health.py",
-    "Research Quality Center",
-    ":material/fact_check:",
-),
-
-],
-
+        "Research Evidence": [
+            st.Page(
+                str(APP_DIR / "pages/research_findings.py"),
+                title="Model Comparison & Stability", icon=":material/science:",
+            ),
+            st.Page(
+                str(APP_DIR / "pages/model_validation_studio.py"),
+                title="Model Validation Studio", icon=":material/tune:",
+            ),
+            st.Page(
+                str(APP_DIR / "pages/research_health.py"),
+                title="Research Quality Center", icon=":material/fact_check:",
+            ),
+        ],
     }
-
-    # Hide pages that have not been implemented yet.
-    sections = {
-        section: [page for page in pages if page is not None]
-        for section, pages in sections.items()
-    }
-
-    sections = {
-        section: pages
-        for section, pages in sections.items()
-        if pages
-    }
-
-    selected = st.navigation(
-        sections,
-        position="sidebar",
-    )
-
-    selected.run()
+    st.navigation(sections, position="sidebar").run()
 
 
 if __name__ == "__main__":

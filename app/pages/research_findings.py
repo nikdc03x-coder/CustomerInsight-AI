@@ -127,7 +127,7 @@ def show_algorithm_analysis(algorithms):
     chart_type = chart_type or "Bar"
 
     fig = comparison_chart(algorithms, chart_type, metric)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     with st.container(border=True):
         st.markdown("#### What does this chart tell us?")
@@ -257,7 +257,7 @@ def show_stability_analysis(summary, runs):
     )
 
     fig = stability_chart(summary, runs, mode)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     most_stable = summary.loc[summary["mean"].idxmax()]
     least_stable = summary.loc[summary["mean"].idxmin()]

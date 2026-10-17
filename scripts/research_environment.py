@@ -18,7 +18,11 @@ PACKAGES = [
     "matplotlib",
     "plotly",
     "streamlit",
-    "jupyter",
+    "jupyterlab",
+    "openpyxl",
+    "nbformat",
+    "nbclient",
+    "ipykernel",
     "pytest",
 ]
 

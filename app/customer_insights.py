@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 import streamlit as st
 
 from customerinsight.explanations import assign_customer_clusters
@@ -739,7 +738,7 @@ def main():
 
         st.plotly_chart(
             figure,
-            use_container_width=True,
+            width="stretch",
             config={"displaylogo": False},
         )
 

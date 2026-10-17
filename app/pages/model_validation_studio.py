@@ -294,7 +294,7 @@ def main():
 
     st.divider()
 
-     
+
     explore_tab, comparison_tab, diagnostic_tab, evidence_tab = st.tabs([
         "Explore Configurations",
         "Compare Methods",
@@ -346,7 +346,7 @@ def main():
 
     with comparison_tab:
         compare_at_k(results)
-        
+
     with diagnostic_tab:
         show_k2_diagnostics()
 
@@ -384,11 +384,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-    
-# Explain the unusually high K=2 silhouette score
-# using the saved diagnostic experiment results.
-st.divider()
-
-show_k2_diagnostics(key_prefix="validation_overview")
-show_k2_diagnostics(key_prefix="validation_details")

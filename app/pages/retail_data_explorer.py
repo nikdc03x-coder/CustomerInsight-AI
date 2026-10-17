@@ -11,9 +11,6 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parents[2]
 RAW_FILE = ROOT / "data/raw/Online Retail.xlsx"
 
-COLORS = ["#0D9488", "#4F7EDB", "#9B72D0", "#D89A45"]
-
-
 @st.cache_data(show_spinner="Reading retail transactions...")
 def load_transactions():
     """Read the original workbook without modifying the source file."""

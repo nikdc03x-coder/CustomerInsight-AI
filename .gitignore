@@ -6,6 +6,8 @@ __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
 *.egg-info/
+build/
+dist/
 
 # Local editor and environment settings
 .vscode/

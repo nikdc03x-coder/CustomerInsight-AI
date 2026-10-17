@@ -1,93 +1,103 @@
 # CustomerInsight AI
 
-### Explainable Customer Behaviour Discovery
+An exploratory customer-segmentation research project using historical retail
+transactions. It turns qualifying purchases into recency, frequency and monetary
+(RFM) features, compares clustering methods, measures assignment stability, and
+explains groups through a seven-page Streamlit dashboard.
 
-CustomerInsight AI is a research-oriented Data Science
-and Machine Learning project investigating how
-unsupervised learning algorithms discover and explain
-customer purchasing patterns.
+The project uses established machine-learning methods. Its findings describe one
+historical dataset; they do not establish future purchasing behaviour or measured
+business impact. Monetary values are gross positive spending, not net revenue.
 
-## Research objective
+## What is implemented
 
-Our primary goal is to investigate the quality,
-stability and interpretability of customer segmentation
-methods using retail transaction data.
+- Original-workbook exploration and customer-level RFM construction.
+- K-Means, Agglomerative Clustering and DBSCAN baseline comparison.
+- K-Means stability under seeds, training subsets and feature noise.
+- Two preprocessing methods and K=2–10 sensitivity experiments.
+- Four-group descriptions and a separate K=2 imbalance investigation.
+- File-integrity checks, cross-file consistency and numerical comparison scripts.
+- Six research notebooks, a manuscript draft and research logs.
 
-## Research questions
+See [the project review](docs/project_review.md) for architecture, findings,
+cleanup decisions and remaining limitations, and [the research manuscript](research/research_manuscript.md)
+for the study narrative.
 
-- How do different clustering algorithms compare?
-- How stable are their customer segments?
-- How can we explain the identified groups clearly?
+## Installation
 
-## Research approach
+Python 3.11 or newer is required. Run these commands from the repository root.
 
-The project combines:
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[dashboard,dev]"
+```
 
-- Customer transaction analysis
-- Behavioural feature engineering
-- Unsupervised machine learning
-- Model evaluation and stability testing
-- Explainable visualizations
-- Reproducible Python software
+On macOS/Linux, activate with `source .venv/bin/activate` instead.
+Install only `-e .` for the reusable analysis package, `-e ".[dashboard]"`
+for Streamlit, or `-e ".[dev]"` for tests and notebooks. The development extra
+includes Matplotlib, required by the clustering notebook.
 
-## Architecture
+```powershell
+python scripts/inspect_data.py
+python -m pytest -q
+python -m streamlit run app/main.py
+```
 
-We use Jupyter notebooks for research experiments
-and Python modules for reusable implementation.
+The sample CSV supports a small loader demonstration and tests. It is not a
+replacement for the research dataset or the complete dashboard evidence.
 
-The final Streamlit application will demonstrate
-the results in a way that non-technical users
-can understand.
+## Research data and execution
 
-## Getting started
+The raw workbook, processed RFM data and original experiment CSVs are local,
+ignored files. A fresh clone therefore needs these inputs before all dashboard
+pages can show results. Obtain the dataset using the source listed in
+[docs/data_exploration_research.md](docs/data_exploration_research.md), then place
+the workbook at `data/raw/Online Retail.xlsx`.
 
-Requirements: Python 3.11 or newer.
+1. Run `python scripts/build_customer_features.py` to write
+   `data/processed/customer_rfm.csv`.
+2. Read the six notebooks in order: `data_exploration`, `feature_engineering`,
+   `clustering_experiments`, `stability_analysis`, `customer_explainability`,
+   and `model_validation`.
+3. Keep a copy of existing local evidence before regenerating it. The feature
+   and stability notebooks write their data/results; the restored clustering,
+   explainability and validation notebooks primarily inspect or compare saved
+   evidence. Some do not generate every original CSV from scratch.
 
-Create an environment:
+Full recreation from a fresh clone remains incomplete. The exact expected
+artifacts and verification boundaries are documented in
+[docs/reproducibility_research.md](docs/reproducibility_research.md).
 
-    python -m venv .venv
-    source .venv/Scripts/activate
+With the original local evidence present, these commands compare new calculations
+against it and write separate reports under `results/reproducibility/`:
 
-Install dependencies:
+```powershell
+python scripts/reproduce_clustering.py
+python scripts/reproduce_model_validation.py
+python scripts/verify_customer_profiles.py
+python scripts/verify_research_reproduction.py
+```
 
-    python -m pip install -e ".[dev]"
+The last command inspects stored comparison/notebook evidence; it does not rerun
+all experiments. `python scripts/research_evidence_summary.py` prints the original
+tables. `python scripts/audit_notebook_reproducibility.py` writes a structural
+notebook audit, which does not prove successful execution.
 
-Inspect the demonstration data:
+## Repository guide
 
-    python scripts/inspect_data.py
+| Location | Purpose |
+| --- | --- |
+| `src/customerinsight/` | Reusable data, features, modelling and audit functions |
+| `app/main.py` | Streamlit navigation and dashboard entry point |
+| `app/pages/`, `app/customer_insights.py`, `app/k2_diagnostics.py` | Dashboard pages and diagnostic component |
+| `scripts/` | Data preparation, reproduction, inspection and environment tools |
+| `tests/` | Synthetic unit tests and optional local-evidence checks |
+| `notebooks/` | Research narratives and experiments; edit these directly |
+| `docs/`, `research/` | Phase history, current verification record and manuscript |
+| `data/sample/` | Small tracked software-verification fixture |
+| `data/raw/`, `data/processed/`, `results/experiments/` | Local inputs and original evidence, ignored by Git |
+| `results/reproducibility/` | Tracked historical verification artifacts |
 
-Run the tests:
-
-    python -m pytest -v
-
-## Research documentation
-
-Phase-by-phase research records are stored in `docs/`.
-
-The first report is:
-
-`docs/phase_01_foundation.md`
-
-## Project status
-
-Phase 01 — Research foundation and data-loading module.
-
-The sample data is only for software verification.
-Experimental findings will be reported after
-the research dataset has been selected and analysed.
-
-## Research notebooks
-
-- `notebooks/data_exploration.ipynb`
-- `notebooks/feature_engineering.ipynb` (planned)
-- `notebooks/clustering_experiments.ipynb` (planned)
-- `notebooks/stability_analysis.ipynb` (planned)
-- `notebooks/explainability.ipynb` (planned)
-
-## Research documentation
-
-- `docs/phase_01_foundation.md`
-- `docs/data_exploration_research.md`
-
-Each research phase records its objectives, methodology,
-experiments, findings, limitations and references.
+Phase documents describe work at the time they were written. Current limitations
+and the latest cleanup verification are recorded in the project review.
