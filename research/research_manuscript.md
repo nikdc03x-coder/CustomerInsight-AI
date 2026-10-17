@@ -418,3 +418,29 @@ Additional reproducibility verification covers the 18 K-Means sensitivity config
 **Notebook execution results:** Pending final verification.
 
 Although the baseline clustering experiment has been successfully reproduced in the current Python environment, complete end-to-end reproducibility from the original source transactions and a fresh software environment remains unverified.
+
+### Numerical Reproduction of Model Validation Experiments
+
+The model-validation sensitivity study was re-executed using the existing project implementation and processed customer-level RFM dataset.
+
+All 18 configurations were successfully reproduced across two preprocessing approaches and cluster counts ranging from K=2 to K=10.
+
+The regenerated silhouette scores, K-Means inertia measurements and Adjusted Rand Index values agreed with the original experimental results. The verification report recorded maximum absolute differences of 0.0000000000 for all three metrics at the reported precision.
+
+The numerical comparison is preserved in `results/reproducibility/model_validation_comparison.csv`.
+
+### Research Notebook Execution Verification
+
+The Customer Explainability and Model Validation notebooks were executed and their execution records inspected.
+
+The Customer Explainability notebook contained eight executed code cells with no recorded errors. The Model Validation notebook also contained eight executed code cells with no recorded errors.
+
+These findings establish successful execution of the saved notebook workflows under the tested environment.
+
+However, successful notebook execution alone does not establish independent numerical reproduction of every displayed finding. Customer-profile agreement requires separate confirmation using the reconstructed-versus-saved comparison.
+
+### Remaining Reproducibility Limitations
+
+The baseline clustering and model-validation experiments have demonstrated numerical agreement with their saved results in the current software environment.
+
+Full end-to-end reproducibility remains subject to re-execution of the original transaction-processing workflow, verification of the remaining notebooks and successful installation and execution in a fresh environment.
