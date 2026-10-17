@@ -7,6 +7,8 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from k2_diagnostics import show_k2_diagnostics
+
 
 ROOT = Path(__file__).resolve().parents[2]
 RESULTS_FILE = ROOT / "results/experiments/model_validation_results.csv"
@@ -292,11 +294,14 @@ def main():
 
     st.divider()
 
-    explore_tab, comparison_tab, evidence_tab = st.tabs([
+     
+    explore_tab, comparison_tab, diagnostic_tab, evidence_tab = st.tabs([
         "Explore Configurations",
         "Compare Methods",
+        "K=2 Investigation",
         "Research Evidence",
     ])
+
 
     with explore_tab:
         st.subheader("Investigate model sensitivity")
@@ -341,6 +346,10 @@ def main():
 
     with comparison_tab:
         compare_at_k(results)
+        
+    with diagnostic_tab:
+        show_k2_diagnostics()
+
 
     with evidence_tab:
         st.subheader("Explore the original experiment results")
@@ -375,3 +384,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    
+# Explain the unusually high K=2 silhouette score
+# using the saved diagnostic experiment results.
+st.divider()
+
+show_k2_diagnostics(key_prefix="validation_overview")
+show_k2_diagnostics(key_prefix="validation_details")
