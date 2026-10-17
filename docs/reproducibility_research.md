@@ -317,3 +317,54 @@ are required before claiming full reproducibility.
 3. Re-execute the 18 configurations.
 4. Compare regenerated and original results.
 5. Document any numerical differences.
+
+## Phase 08 — Model Validation Reproduction
+
+### Objective
+
+Verify whether the 18 original model validation
+configurations can be reproduced.
+
+### Dataset
+
+Processed customer-level RFM records.
+
+### Methodology
+
+Two preprocessing approaches were evaluated:
+
+- Standard scaling
+- Log1p transformation followed by standard scaling
+
+Nine cluster counts were tested per method:
+K = 2 through K = 10.
+
+### Verification
+
+For each configuration, compare:
+
+1. Silhouette score
+2. K-Means inertia
+3. Adjusted Rand Index relative to baseline
+
+The original results remain unchanged.
+
+### Actual Findings
+
+Configurations reproduced: Pending.
+
+Maximum silhouette difference: Pending.
+
+Maximum inertia difference: Pending.
+
+Maximum ARI difference: Pending.
+
+### Interpretation
+
+Complete using the actual comparison output.
+
+### Limitations
+
+Numerical agreement in the current environment
+does not establish clean-environment reproducibility
+or external validity.
