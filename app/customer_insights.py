@@ -1,46 +1,134 @@
 
-"""Interactive explanations of customer purchasing behaviour."""
+"""Interactive customer behaviour dashboard for CustomerInsight AI."""
 
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
 
-from customerinsight.explanations import (
-    assign_customer_clusters,
-    describe_clusters,
-)
+from customerinsight.explanations import assign_customer_clusters
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DATA_PATH = PROJECT_ROOT / "data/processed/customer_rfm.csv"
+ROOT = Path(__file__).resolve().parents[1]
+DATA_PATH = ROOT / "data/processed/customer_rfm.csv"
 
-METRICS = {
+FEATURES = {
     "recency": {
-        "label": "Days since last purchase",
-        "description": "How long ago did customers last purchase?",
+        "name": "Purchase recency",
+        "short": "Recency",
         "unit": "days",
-        "better": "lower",
+        "question": "How recently did customers purchase?",
+        "help": "Days since the last recorded purchase. Lower means more recent.",
     },
     "frequency": {
-        "label": "Purchase frequency",
-        "description": "How many different purchase invoices do customers have?",
+        "name": "Purchase frequency",
+        "short": "Frequency",
         "unit": "invoices",
-        "better": "higher",
+        "question": "How often do customers purchase?",
+        "help": "Number of distinct positive-sale invoices per customer.",
     },
     "monetary": {
-        "label": "Positive spending",
-        "description": "How much did customers spend on positive sales?",
-        "unit": "£",
-        "better": "higher",
+        "name": "Positive spending",
+        "short": "Spending",
+        "unit": "GBP",
+        "question": "How much do customers spend?",
+        "help": "Total gross positive purchases in pounds, before refund reconciliation.",
     },
 }
 
+CHART_TYPES = [
+    "Bar chart",
+    "Line plot",
+    "Area chart",
+    "Grouped comparison",
+    "Box plot",
+    "Violin plot",
+    "Histogram",
+    "Scatter plot",
+    "Heatmap",
+]
 
-@st.cache_data
-def load_customer_data():
-    """Load RFM data and reproduce our baseline customer groups."""
+COLORS = {
+    "Group A": "#0D9488",
+    "Group B": "#4676D7",
+    "Group C": "#9770D2",
+    "Group D": "#E0A04B",
+}
+
+
+def apply_design():
+    """Apply a small amount of styling without replacing Streamlit widgets."""
+
+    st.markdown(
+        """
+        <style>
+        .block-container {
+            max-width: 1440px;
+            padding-top: 2rem;
+            padding-bottom: 4rem;
+        }
+
+        h1, h2, h3 {
+            letter-spacing: -0.035em;
+        }
+
+        h1 {
+            font-weight: 750;
+        }
+
+        [data-testid="stMetric"] {
+            padding: 1.1rem;
+            border: 1px solid rgba(130,140,160,.20);
+            border-radius: 14px;
+        }
+
+        [data-testid="stMetricLabel"] {
+            font-weight: 500;
+        }
+
+        [data-testid="stMetricValue"] {
+            font-weight: 700;
+        }
+
+        div[data-testid="stVerticalBlockBorderWrapper"] {
+            border-radius: 14px;
+        }
+
+        div.stButton button {
+            border-radius: 10px;
+        }
+
+        .section-caption {
+            font-size: .79rem;
+            letter-spacing: .11em;
+            text-transform: uppercase;
+            color: #0D9488;
+            font-weight: 700;
+            margin-bottom: .35rem;
+        }
+
+        .insight-lead {
+            font-size: 1.05rem;
+            line-height: 1.75;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+@st.cache_data(show_spinner="Analysing customer behaviour...")
+def load_data():
+    """Load the saved RFM dataset and reproduce our baseline clusters."""
+
+    if not DATA_PATH.is_file():
+        raise FileNotFoundError(
+            "The customer RFM dataset is missing. "
+            "Run the Phase 03 feature engineering pipeline."
+        )
 
     rfm = pd.read_csv(
         DATA_PATH,
@@ -49,137 +137,157 @@ def load_customer_data():
 
     customers = assign_customer_clusters(rfm, clusters=4)
 
-    # Stable display names are based on cluster median spending.
-    # This ordering is for presentation, not a model ranking.
-    profiles = describe_clusters(customers)
-    ordered = profiles.sort_values(
-        ["median_monetary", "cluster"],
-        ascending=[False, True],
+    # Sort by spending only to assign readable display letters.
+    ordering = (
+        customers.groupby("cluster")["monetary"]
+        .median()
+        .sort_values(ascending=False)
     )
 
-    group_names = {
-        cluster_id: f"Group {chr(65 + position)}"
-        for position, cluster_id in enumerate(ordered["cluster"])
+    names = {
+        cluster: f"Group {chr(65 + position)}"
+        for position, cluster in enumerate(ordering.index)
     }
 
-    customers["group"] = customers["cluster"].map(group_names)
-    profiles["group"] = profiles["cluster"].map(group_names)
+    customers["group"] = customers["cluster"].map(names)
 
-    return customers, profiles.sort_values("group")
+    return customers
 
 
-def format_value(value, metric):
-    """Show purchasing metrics in familiar, readable units."""
+def money(value):
+    return f"£{value:,.2f}"
+
+
+def number(value, metric):
+    """Display each feature with an understandable unit."""
 
     if metric == "monetary":
-        return f"£{value:,.2f}"
-
-    if metric == "frequency":
-        return f"{value:,.1f} invoices"
-
-    return f"{value:,.1f} days"
-
-
-def explain_chart(customers, metric, groups):
-    """Create an explanation using statistics from the selected data."""
-
-    selected = customers[customers["group"].isin(groups)]
-
-    if selected.empty:
-        return "No customer records match this selection."
-
-    medians = selected.groupby("group")[metric].median()
-    highest = medians.idxmax()
-    lowest = medians.idxmin()
-
-    name = METRICS[metric]["label"].lower()
-
-    meaning = (
-        f"This visualization compares {name} across "
-        f"{len(medians)} selected customer groups."
-    )
-
-    finding = (
-        f"{highest} has the highest median "
-        f"({format_value(medians[highest], metric)}), "
-        f"while {lowest} has the lowest "
-        f"({format_value(medians[lowest], metric)})."
-    )
+        return money(value)
 
     if metric == "recency":
-        meaning += (
-            " A smaller number means customers "
-            "purchased more recently."
+        return f"{value:,.1f} days"
+
+    return f"{value:,.1f} invoices"
+
+
+def group_profile(customers):
+    """Calculate the typical purchasing habits in every selected group."""
+
+    return (
+        customers.groupby("group", as_index=False)
+        .agg(
+            customers=("customer_id", "count"),
+            recency=("recency", "median"),
+            frequency=("frequency", "median"),
+            monetary=("monetary", "median"),
         )
-
-    return meaning, finding
-
-
-def show_explanation(customers, metric, groups, chart_type):
-    """Explain the chart without making unsupported claims."""
-
-    result = explain_chart(customers, metric, groups)
-
-    if isinstance(result, str):
-        st.info(result)
-        return
-
-    meaning, finding = result
-
-    st.markdown("#### Understand this visualization")
-
-    with st.container(border=True):
-        st.markdown("**What does this chart show?**")
-        st.write(meaning)
-
-        st.markdown("**What did we discover?**")
-        st.write(finding)
-
-        st.markdown("**Why did we use this chart?**")
-
-        reasons = {
-            "Bar chart": "To compare typical values between groups.",
-            "Box plot": "To examine variation and unusually high or low values.",
-            "Violin plot": "To explore how values are distributed within groups.",
-            "Scatter plot": "To investigate relationships between purchasing features.",
-            "Heatmap": "To compare several group characteristics at once.",
-        }
-
-        st.write(reasons[chart_type])
-
-        st.markdown("**How was this calculated?**")
-        st.write(
-            "We grouped customers by their model-assigned segment "
-            "and calculated the median of their original RFM values. "
-            "The visualization uses historical transaction data."
-        )
-
-        st.markdown("**What does this not tell us?**")
-        st.caption(
-            "These are descriptive patterns, not predictions or "
-            "evidence of customer motivations. Group differences "
-            "do not establish causal relationships."
-        )
+        .sort_values("group")
+    )
 
 
-def show_chart(customers, profiles, metric, chart_type):
-    """Display the selected Plotly visualization."""
+def describe_group(row, overall):
+    """Describe observed purchasing patterns without guessing motivations."""
 
-    label = METRICS[metric]["label"]
-    median_column = f"median_{metric}"
+    findings = []
+
+    for feature in FEATURES:
+        baseline = overall[feature]
+
+        if baseline <= 0:
+            continue
+
+        ratio = row[feature] / baseline
+
+        if feature == "recency":
+            if ratio <= 0.8:
+                findings.append("more recent purchases")
+            elif ratio >= 1.2:
+                findings.append("less recent purchases")
+        elif ratio >= 1.2:
+            findings.append(
+                f"higher {FEATURES[feature]['short'].lower()}"
+            )
+        elif ratio <= 0.8:
+            findings.append(
+                f"lower {FEATURES[feature]['short'].lower()}"
+            )
+
+    if not findings:
+        return "Purchasing habits close to the overall median."
+
+    return "Compared with the full customer population: " + ", ".join(
+        findings
+    ) + "."
+
+
+def build_figure(customers, metric, chart_type):
+    """Generate a chart using real data and the user's current selection."""
+
+    profile = group_profile(customers)
+    name = FEATURES[metric]["name"]
+    groups = sorted(customers["group"].unique())
+    palette = {group: COLORS.get(group, "#64748B") for group in groups}
 
     if chart_type == "Bar chart":
         fig = px.bar(
-            profiles,
+            profile,
             x="group",
-            y=median_column,
+            y=metric,
             color="group",
+            color_discrete_map=palette,
             text_auto=".2f",
-            title=f"Typical {label.lower()} by customer group",
-            labels={
-                "group": "Customer group",
-                median_column: label,
-            },
+            title=f"Typical {name.lower()} by group",
+        )
+
+    elif chart_type == "Line plot":
+        # Group letters are categories, not chronological observations.
+        fig = px.line(
+            profile,
+            x="group",
+            y=metric,
+            markers=True,
+            title=f"Compare {name.lower()} across groups",
+            category_orders={"group": groups},
+        )
+        fig.update_traces(
+            line=dict(color="#0D9488", width=3),
+            marker=dict(size=11),
+        )
+
+    elif chart_type == "Area chart":
+        fig = px.area(
+            profile,
+            x="group",
+            y=metric,
+            markers=True,
+            title=f"Connected view of typical {name.lower()}",
+            category_orders={"group": groups},
+        )
+
+    elif chart_type == "Grouped comparison":
+        # Compare each group's median with the full population median.
+        baseline = st.session_state["population_medians"][metric]
+
+        comparison = profile[["group", metric]].copy()
+        comparison["Population median"] = baseline
+
+        comparison = comparison.melt(
+            id_vars="group",
+            value_vars=[metric, "Population median"],
+            var_name="Measure",
+            value_name="Value",
+        )
+        comparison["Measure"] = comparison["Measure"].replace(
+            {metric: "Group median"}
+        )
+
+        fig = px.bar(
+            comparison,
+            x="group",
+            y="Value",
+            color="Measure",
+            barmode="group",
+            title="Group median versus overall customer median",
         )
 
     elif chart_type == "Box plot":
@@ -188,8 +296,9 @@ def show_chart(customers, profiles, metric, chart_type):
             x="group",
             y=metric,
             color="group",
+            color_discrete_map=palette,
             points="outliers",
-            title=f"How much does {label.lower()} vary?",
+            title=f"How much does {name.lower()} vary?",
         )
 
     elif chart_type == "Violin plot":
@@ -198,40 +307,50 @@ def show_chart(customers, profiles, metric, chart_type):
             x="group",
             y=metric,
             color="group",
+            color_discrete_map=palette,
             box=True,
             points=False,
-            title=f"Distribution of {label.lower()}",
+            title=f"Distribution of {name.lower()}",
+        )
+
+    elif chart_type == "Histogram":
+        fig = px.histogram(
+            customers,
+            x=metric,
+            color="group",
+            color_discrete_map=palette,
+            nbins=45,
+            barmode="overlay",
+            opacity=0.65,
+            title=f"How is {name.lower()} distributed?",
         )
 
     elif chart_type == "Scatter plot":
-        y_metric = "monetary" if metric != "monetary" else "frequency"
+        second = (
+            "monetary" if metric != "monetary" else "frequency"
+        )
 
         fig = px.scatter(
             customers,
             x=metric,
-            y=y_metric,
+            y=second,
             color="group",
-            hover_data=["recency", "frequency", "monetary"],
+            color_discrete_map=palette,
             opacity=0.55,
-            title="How are customer purchasing features related?",
-            labels={
-                metric: label,
-                y_metric: METRICS[y_metric]["label"],
-            },
+            hover_data=["recency", "frequency", "monetary"],
+            title="Explore the relationship between purchasing features",
         )
+
+        fig.update_yaxes(title=FEATURES[second]["name"])
 
     else:
-        # Ratios are displayed relative to the selected population.
-        medians = (
-            customers.groupby("group")[
-                ["recency", "frequency", "monetary"]
-            ]
-            .median()
-        )
-
-        baseline = customers[
+        medians = profile.set_index("group")[
             ["recency", "frequency", "monetary"]
-        ].median().replace(0, float("nan"))
+        ]
+
+        baseline = pd.Series(
+            st.session_state["population_medians"]
+        ).replace(0, np.nan)
 
         relative = medians.div(baseline)
 
@@ -241,39 +360,218 @@ def show_chart(customers, profiles, metric, chart_type):
             aspect="auto",
             color_continuous_scale="RdBu_r",
             color_continuous_midpoint=1,
-            title="How does each group compare with selected customers?",
+            title="Group behaviour relative to all customers",
             labels={
-                "x": "Purchasing feature",
+                "x": "Behaviour feature",
                 "y": "Customer group",
                 "color": "Relative median",
             },
         )
 
     fig.update_layout(
-        showlegend=False,
-        margin=dict(l=20, r=20, t=65, b=30),
+        template="plotly_white",
+        height=455,
+        font=dict(size=13),
+        title=dict(font=dict(size=19)),
+        margin=dict(l=20, r=20, t=75, b=35),
+        hovermode="closest",
+        legend_title_text="Customer groups",
     )
 
-    st.plotly_chart(fig, width="stretch")
+    if chart_type not in ["Scatter plot", "Heatmap", "Histogram"]:
+        fig.update_xaxes(title="Customer group")
+        fig.update_yaxes(title=name)
+
+    if chart_type == "Histogram":
+        fig.update_yaxes(title="Number of customers")
+
+    if chart_type not in ["Scatter plot", "Heatmap"]:
+        fig.update_layout(
+            xaxis=dict(categoryorder="array", categoryarray=groups)
+            if chart_type != "Histogram"
+            else {},
+        )
+
+    return fig
 
 
-def compare_groups(customers, first, second):
-    """Create an understandable side-by-side group comparison."""
+def explanation_text(customers, metric, chart_type):
+    """Generate a specific, verifiable observation from selected records."""
 
-    columns = ["recency", "frequency", "monetary"]
+    profile = group_profile(customers)
 
-    medians = customers.groupby("group")[columns].median()
+    highest = profile.loc[profile[metric].idxmax()]
+    lowest = profile.loc[profile[metric].idxmin()]
 
-    first_values = medians.loc[first]
-    second_values = medians.loc[second]
+    if len(profile) == 1:
+        finding = (
+            f"{highest['group']} has a median of "
+            f"{number(highest[metric], metric)}."
+        )
+    else:
+        finding = (
+            f"{highest['group']} has the highest median "
+            f"({number(highest[metric], metric)}). "
+            f"{lowest['group']} has the lowest "
+            f"({number(lowest[metric], metric)})."
+        )
+
+    if metric == "recency":
+        finding += (
+            " Lower recency means a more recent recorded purchase."
+        )
+
+    chart_reasons = {
+        "Bar chart":
+            "Best for comparing typical values across different groups.",
+        "Line plot":
+            "Connects group medians to make differences easier to follow. "
+            "The group order is categorical, not chronological.",
+        "Area chart":
+            "A connected, filled comparison of group medians. "
+            "The filled area is not cumulative sales or a time trend.",
+        "Grouped comparison":
+            "Shows whether each group's median is above or below "
+            "the full customer population's median.",
+        "Box plot":
+            "Reveals the middle value, variability and outliers "
+            "within each customer group.",
+        "Violin plot":
+            "Shows how customer values are distributed within groups.",
+        "Histogram":
+            "Shows how many customers fall into different value ranges.",
+        "Scatter plot":
+            "Reveals how two purchasing features relate across customers.",
+        "Heatmap":
+            "Compares all three purchasing features relative to "
+            "the full population at the same time.",
+    }
+
+    return finding, chart_reasons[chart_type]
+
+
+def insight_panel(customers, metric, chart_type):
+    """Explain what the visualization means in everyday language."""
+
+    finding, reason = explanation_text(
+        customers, metric, chart_type
+    )
+
+    st.markdown("### What can we learn from this chart?")
+
+    with st.container(border=True):
+        st.markdown("**01 · What are we looking at?**")
+        st.write(
+            FEATURES[metric]["help"]
+            if chart_type != "Heatmap"
+            else "A comparison of recency, frequency and spending "
+                 "against the full customer population's medians."
+        )
+
+        st.markdown("**02 · What did the data reveal?**")
+        st.markdown(
+            f'<div class="insight-lead">{finding}</div>',
+            unsafe_allow_html=True,
+        )
+
+        st.markdown("**03 · Why use this visualization?**")
+        st.write(reason)
+
+        st.markdown("**04 · Why is it useful?**")
+        st.write(
+            "It helps us understand how purchasing behaviour differs "
+            "among model-discovered customer groups, and which patterns "
+            "deserve further investigation."
+        )
+
+        with st.expander("Research method and limitations"):
+            st.write(
+                "The analysis uses historical RFM features. "
+                "Group comparisons are based on median values, "
+                "and cluster membership comes from K-Means."
+            )
+            st.write(
+                "These results do not explain customer motivations, "
+                "prove causation or predict future purchases. "
+                "A group median does not describe every customer."
+            )
+
+
+def show_group_cards(customers):
+    """Turn cluster statistics into short, readable customer stories."""
+
+    profile = group_profile(customers)
+
+    overall = st.session_state["population_medians"]
+
+    st.subheader("Meet the customer groups")
+    st.caption(
+        "Labels A–D are display identifiers. "
+        "Their descriptions are derived from actual purchasing features."
+    )
+
+    columns = st.columns(4)
+
+    for position, row in profile.reset_index(drop=True).iterrows():
+        with columns[position % 4]:
+            with st.container(border=True):
+                st.markdown(f"### {row['group']}")
+                st.metric("Customers", f"{row['customers']:,.0f}")
+                st.caption(describe_group(row, overall))
+
+                st.write(
+                    f"**Recency:** {number(row['recency'], 'recency')}"
+                )
+                st.write(
+                    f"**Frequency:** {number(row['frequency'], 'frequency')}"
+                )
+                st.write(
+                    f"**Spending:** {number(row['monetary'], 'monetary')}"
+                )
+
+
+def group_comparison(customers):
+    """Compare the typical behaviour of two selected groups."""
+
+    available = sorted(customers["group"].unique())
+
+    if len(available) < 2:
+        st.info("Select at least two groups to compare.")
+        return
+
+    left, right = st.columns(2)
+
+    with left:
+        first = st.selectbox(
+            "First group",
+            available,
+            key="compare_first",
+        )
+
+    with right:
+        second = st.selectbox(
+            "Second group",
+            available,
+            index=1,
+            key="compare_second",
+        )
+
+    if first == second:
+        st.info("Select two different groups.")
+        return
+
+    profiles = group_profile(customers).set_index("group")
 
     rows = []
 
-    for metric in columns:
+    for metric in FEATURES:
+        first_value = profiles.loc[first, metric]
+        second_value = profiles.loc[second, metric]
+
         rows.append({
-            "Behaviour": METRICS[metric]["label"],
-            first: format_value(first_values[metric], metric),
-            second: format_value(second_values[metric], metric),
+            "Behaviour": FEATURES[metric]["name"],
+            first: number(first_value, metric),
+            second: number(second_value, metric),
         })
 
     st.dataframe(
@@ -282,156 +580,234 @@ def compare_groups(customers, first, second):
         width="stretch",
     )
 
-    st.markdown("#### What makes these groups different?")
+    with st.container(border=True):
+        st.markdown("#### Key differences")
 
-    for metric in columns:
-        left = first_values[metric]
-        right = second_values[metric]
+        for metric in FEATURES:
+            a = profiles.loc[first, metric]
+            b = profiles.loc[second, metric]
 
-        if left == right:
-            st.write(
-                f"**{METRICS[metric]['label']}:** "
-                "Both groups have the same median."
-            )
-            continue
+            if np.isclose(a, b):
+                st.write(
+                    f"**{FEATURES[metric]['short']}:** "
+                    "The two medians are equal."
+                )
+                continue
 
-        higher = first if left > right else second
+            higher = first if a > b else second
 
-        if metric == "recency":
-            lower = second if higher == first else first
-            st.write(
-                f"**Recency:** {lower} purchased more recently "
-                "based on the group's median."
-            )
-        else:
-            st.write(
-                f"**{METRICS[metric]['label']}:** "
-                f"{higher} has the higher median."
-            )
+            if metric == "recency":
+                recent = second if higher == first else first
+                st.write(
+                    f"**Recency:** {recent} has more recent "
+                    "purchases based on its median."
+                )
+            else:
+                st.write(
+                    f"**{FEATURES[metric]['short']}:** "
+                    f"{higher} has the higher median."
+                )
 
 
 def main():
     st.set_page_config(
-        page_title="CustomerInsight AI | Behaviour Explorer",
+        page_title="CustomerInsight AI | Behaviour Intelligence",
         page_icon="📊",
         layout="wide",
+        initial_sidebar_state="expanded",
     )
 
-    st.title("CustomerInsight AI")
-    st.subheader("Understand Your Customer Groups")
+    apply_design()
+
+    try:
+        customers = load_data()
+    except (FileNotFoundError, ValueError, KeyError) as error:
+        st.error(f"Unable to load customer analysis: {error}")
+        st.stop()
+
+    st.session_state["population_medians"] = (
+        customers[["recency", "frequency", "monetary"]]
+        .median()
+        .to_dict()
+    )
+
+    all_groups = sorted(customers["group"].unique())
+
+    # Keep global filters in the sidebar so the content stays uncluttered.
+    with st.sidebar:
+        st.title("CustomerInsight AI")
+        st.caption("Research-driven customer intelligence")
+        st.divider()
+
+        st.subheader("Explore your data")
+
+        chosen_groups = st.multiselect(
+            "Customer groups",
+            all_groups,
+            default=all_groups,
+        )
+
+        st.caption(
+            "Select the groups you want to explore. "
+            "Group definitions are based on the complete RFM dataset."
+        )
+
+        st.divider()
+
+        st.subheader("Research information")
+        st.write("**Dataset:** UCI Online Retail")
+        st.write("**Clustering:** K-Means (4 clusters)")
+        st.write("**Features:** Recency, Frequency, Monetary")
+
+    if not chosen_groups:
+        st.warning("Select at least one customer group.")
+        st.stop()
+
+    selected = customers[
+        customers["group"].isin(chosen_groups)
+    ].copy()
+
+    st.markdown(
+        '<div class="section-caption">Customer intelligence / '
+        'Research workspace</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.title("Understand Your Customers")
 
     st.write(
-        "Explore how customers differ using purchasing history. "
-        "Choose what to investigate, compare groups and read "
-        "the explanation behind every visualization."
+        "Explore real purchasing behaviour, compare customer groups "
+        "and understand the evidence behind each insight."
     )
 
-    if not DATA_PATH.exists():
-        st.error(
-            "Customer RFM dataset not found. "
-            "Run the Phase 03 feature engineering pipeline first."
-        )
-        st.stop()
+    overview = st.columns(4)
 
-    customers, profiles = load_customer_data()
-
-    groups = profiles["group"].tolist()
-
-    col1, col2, col3 = st.columns(3)
-
-    col1.metric("Customers analysed", f"{len(customers):,}")
-    col2.metric("Discovered groups", len(groups))
-    col3.metric("Research features", 3)
-
-    st.divider()
-
-    st.header("Explore customer behaviour")
-
-    left, right = st.columns(2)
-
-    with left:
-        metric = st.selectbox(
-            "What would you like to investigate?",
-            options=list(METRICS),
-            format_func=lambda key: METRICS[key]["description"],
-        )
-
-    with right:
-        chart_type = st.selectbox(
-            "How would you like to visualize it?",
-            [
-                "Bar chart",
-                "Box plot",
-                "Violin plot",
-                "Scatter plot",
-                "Heatmap",
-            ],
-        )
-
-    selected_groups = st.multiselect(
-        "Choose customer groups",
-        groups,
-        default=groups,
+    overview[0].metric(
+        "Customers in view",
+        f"{len(selected):,}",
+    )
+    overview[1].metric(
+        "Selected groups",
+        len(chosen_groups),
+    )
+    overview[2].metric(
+        "Median purchase frequency",
+        f"{selected['frequency'].median():.1f}",
+    )
+    overview[3].metric(
+        "Median positive spending",
+        money(selected["monetary"].median()),
     )
 
-    if not selected_groups:
-        st.info("Select at least one customer group.")
-        st.stop()
-
-    filtered = customers[
-        customers["group"].isin(selected_groups)
-    ]
-
-    filtered_profiles = profiles[
-        profiles["group"].isin(selected_groups)
-    ]
-
-    show_chart(
-        filtered,
-        filtered_profiles,
-        metric,
-        chart_type,
-    )
-
-    show_explanation(
-        filtered,
-        metric,
-        selected_groups,
-        chart_type,
+    st.caption(
+        "Metrics reflect the current group selection. "
+        "Spending is gross positive sales, not net revenue."
     )
 
     st.divider()
-    st.header("Compare customer groups")
 
-    first_col, second_col = st.columns(2)
+    explore_tab, groups_tab, comparison_tab, data_tab = st.tabs([
+        "Behaviour Explorer",
+        "Group Stories",
+        "Compare Groups",
+        "Explore Data",
+    ])
 
-    with first_col:
-        first = st.selectbox("First group", groups, index=0)
-
-    with second_col:
-        second = st.selectbox(
-            "Second group",
-            groups,
-            index=min(1, len(groups) - 1),
+    with explore_tab:
+        st.subheader("Explore purchasing behaviour")
+        st.caption(
+            "Choose a research question and change the chart "
+            "without changing the underlying customer records."
         )
 
-    if first == second:
-        st.info("Choose two different groups to compare.")
-    else:
-        compare_groups(customers, first, second)
+        control_left, control_right = st.columns([1.4, 1])
 
-    with st.expander("Explore the underlying statistics"):
+        with control_left:
+            metric = st.selectbox(
+                "What would you like to understand?",
+                list(FEATURES),
+                format_func=lambda x: FEATURES[x]["question"],
+            )
+
+        with control_right:
+            chart_type = st.selectbox(
+                "Choose a visualization",
+                CHART_TYPES,
+            )
+
+        figure = build_figure(selected, metric, chart_type)
+
+        st.plotly_chart(
+            figure,
+            use_container_width=True,
+            config={"displaylogo": False},
+        )
+
+        insight_panel(selected, metric, chart_type)
+
+    with groups_tab:
+        show_group_cards(selected)
+
+        st.divider()
+
+        st.subheader("Detailed behaviour statistics")
         st.dataframe(
-            profiles,
+            group_profile(selected),
             hide_index=True,
             width="stretch",
         )
 
+    with comparison_tab:
+        st.subheader("Compare two customer groups")
         st.caption(
-            "Group names are presentation labels ordered by median "
-            "positive spending. They are not permanent customer "
-            "categories or verified business classifications."
+            "See how purchasing habits differ using "
+            "original, understandable feature values."
         )
+
+        group_comparison(selected)
+
+    with data_tab:
+        st.subheader("Explore the underlying customer data")
+        st.caption(
+            "These are customer-level RFM observations, "
+            "not individual product transactions."
+        )
+
+        columns = [
+            "customer_id",
+            "group",
+            "recency",
+            "frequency",
+            "monetary",
+        ]
+
+        st.dataframe(
+            selected[columns],
+            hide_index=True,
+            width="stretch",
+        )
+
+        st.download_button(
+            "Download selected customer data",
+            data=selected[columns].to_csv(index=False),
+            file_name="customerinsight_selected_customers.csv",
+            mime="text/csv",
+        )
+
+        with st.expander("How were these values calculated?"):
+            st.write(
+                "**Recency:** Days since a customer's last positive purchase."
+            )
+            st.write(
+                "**Frequency:** Number of distinct positive-sale invoices."
+            )
+            st.write(
+                "**Monetary:** Total gross positive purchase value in GBP."
+            )
+            st.write(
+                "Cancellations and refunds are not fully reconciled "
+                "in this baseline RFM representation."
+            )
 
 
 if __name__ == "__main__":

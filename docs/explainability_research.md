@@ -169,3 +169,50 @@ Automated tests: Pending
 Research findings: Pending
 
 Git commit: Pending
+
+## Interactive Explainability Dashboard
+
+We extended the explainability analysis into an
+interactive Streamlit research dashboard.
+
+The interface allows users to:
+
+- Switch between different statistical visualizations.
+- Investigate individual customer groups.
+- Compare customer groups using original RFM values.
+- Read explanations calculated from the actual data.
+- Inspect the underlying customer-level observations.
+
+### Visualization design
+
+We use Plotly to provide interactive graphs.
+
+Different chart types answer different questions.
+Bar charts compare groups, while distribution
+charts reveal variation within groups.
+
+Line and area plots represent connected categorical
+comparisons, not changes over time.
+
+### Explainability approach
+
+The dashboard uses descriptive statistics instead
+of generating unsupported claims about customers.
+
+Each visualization includes its interpretation,
+purpose, calculation method and limitations.
+
+### Limitations
+
+The interface describes historical purchasing
+behaviour rather than predicting future purchases.
+
+Group names depend on the current clustering results.
+
+Median comparisons do not establish causation,
+customer motivation or statistical significance.
+
+### Next steps
+
+Validate the dashboard's usability and introduce
+more systematic research visualization tests.
