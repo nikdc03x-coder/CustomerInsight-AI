@@ -279,3 +279,19 @@ phase research documents and saved result tables.
 
 [TODO: Record the tested environment,
 exact commands and all relevant random seeds.]
+
+## Research Evidence and Traceability
+
+| Research question        | Method                                | Supporting evidence          |
+| ------------------------ | ------------------------------------- | ---------------------------- |
+| RQ1: Data preparation    | Data cleaning and RFM construction    | data_exploration.ipynb       |
+| RQ2: Feature engineering | Customer-level RFM calculations       | feature_engineering.ipynb    |
+| RQ3: Model comparison    | K-Means, Agglomerative, DBSCAN        | clustering_baseline.csv      |
+| RQ4: Stability           | Repeated perturbation experiments     | stability_runs.csv           |
+| RQ5: Sensitivity         | K = 2–10 and preprocessing comparison | model_validation_results.csv |
+
+Each numerical claim should be traceable
+to a saved experiment result.
+
+Research interpretations must distinguish
+observed behaviour from causal conclusions.
