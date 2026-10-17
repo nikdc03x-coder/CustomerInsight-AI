@@ -295,3 +295,68 @@ to a saved experiment result.
 
 Research interpretations must distinguish
 observed behaviour from causal conclusions.
+
+## result and discussion
+
+### Customer Segment Characteristics
+
+K-Means clustering with four clusters identified distinct patterns in the purchasing behaviour of 4,338 customers.
+
+Cluster 0 contained 877 customers and was characterized by relatively recent purchases but low purchase frequency. Cluster 1 was the largest group, containing 1,579 customers, and showed the longest median time since purchase (183 days) and the lowest median purchase frequency (1 invoice).
+
+Cluster 2 contained 720 customers and demonstrated the most recent purchasing activity (median recency of 9 days), the highest median purchase frequency (10 invoices), and the highest median positive spending (£3,726.08). Cluster 3 contained 1,162 customers and showed intermediate purchasing patterns, with a median recency of 54 days and a median frequency of 4 invoices.
+
+These findings indicate that RFM-based clustering separates customers with different recorded purchasing patterns. However, the resulting groups are descriptive and should not be interpreted as verified indicators of loyalty, satisfaction, or future behaviour.
+
+### Sensitivity to Preprocessing and Cluster Count
+
+Eighteen K-Means configurations were evaluated using cluster counts from 2 to 10 and two preprocessing approaches: standard scaling and logarithmic transformation followed by standard scaling.
+
+The highest silhouette score under standard scaling was 0.891827 at K=2. Under log transformation and standard scaling, the highest score was 0.426760, also at K=2.
+
+The standard-scaled K=2 configuration showed very low assignment agreement with the original four-cluster model (ARI = 0.003682). This indicates substantially different cluster partitions.
+
+The large difference in silhouette scores demonstrates that clustering evaluation is sensitive to preprocessing and cluster count. However, a high silhouette score alone does not establish that the resulting customer groups are balanced, interpretable, or useful for business decision-making.
+
+Further inspection of the two-cluster configuration is necessary before drawing conclusions about its suitability.
+
+### Stability of the Baseline Clustering
+
+The baseline four-cluster K-Means model was evaluated through 60 experimental runs across three perturbation conditions.
+
+The average Adjusted Rand Index was 0.9360 for changes in random initialization, 0.9413 for training-subset variation, and 0.9172 for feature noise.
+
+These findings provide evidence of relatively consistent cluster assignments under the tested conditions. However, high assignment stability does not establish that the clusters are objectively correct or externally generalizable.
+
+### Overall Interpretation
+
+The experiments suggest that RFM-based customer segmentation can identify distinguishable purchasing behaviour profiles, but the results depend on the selected algorithm configuration and preprocessing approach.
+
+The study highlights the importance of evaluating clustering quality, assignment stability, parameter sensitivity, and interpretability together rather than relying on a single numerical metric.
+
+### Investigation of the High-Silhouette K=2 Configuration
+
+The Phase 08 parameter sensitivity experiment identified
+a standard-scaled K-Means configuration with two clusters
+that achieved a silhouette score of 0.891827.
+
+This result was substantially higher than the score
+of the original four-cluster configuration.
+
+We performed an additional diagnostic analysis to
+examine cluster sizes and RFM feature distributions.
+
+**Cluster sizes:** Pending diagnostic execution.
+
+**Cluster proportions:** Pending diagnostic execution.
+
+**Median purchasing behaviour:** Pending diagnostic execution.
+
+**Interpretation:** To be completed using the actual results.
+
+The analysis will help assess whether the high silhouette
+score corresponds to broad customer segmentation or
+separation of a comparatively small group of observations.
+
+A high silhouette score alone is insufficient to establish
+the practical usefulness of the segmentation.

@@ -1,0 +1,3 @@
+cluster,customers,median_recency,median_frequency,median_monetary,maximum_monetary,customer_share_pct
+0,4312,52.0,2.0,667.88,77183.6,99.4
+1,26,3.5,53.0,59796.865000000005,280206.02,0.6
