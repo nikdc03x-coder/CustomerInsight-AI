@@ -54,13 +54,20 @@ def main():
                 ":material/groups:",
             ),
         ],
-        "Research Evidence": [
-            page_if_available(
-                "pages/research_findings.py",
-                "Model Comparison & Stability",
-                ":material/science:",
-            ),
-        ],
+      
+"Research Evidence": [
+    page_if_available(
+        "pages/research_findings.py",
+        "Model Comparison & Stability",
+        ":material/science:",
+    ),
+    page_if_available(
+        "pages/model_validation_studio.py",
+        "Model Validation Studio",
+        ":material/tune:",
+    ),
+],
+
     }
 
     # Hide pages that have not been implemented yet.
