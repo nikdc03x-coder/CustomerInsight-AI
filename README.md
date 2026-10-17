@@ -75,3 +75,19 @@ Phase 01 — Research foundation and data-loading module.
 The sample data is only for software verification.
 Experimental findings will be reported after
 the research dataset has been selected and analysed.
+
+## Research notebooks
+
+- `notebooks/data_exploration.ipynb`
+- `notebooks/feature_engineering.ipynb` (planned)
+- `notebooks/clustering_experiments.ipynb` (planned)
+- `notebooks/stability_analysis.ipynb` (planned)
+- `notebooks/explainability.ipynb` (planned)
+
+## Research documentation
+
+- `docs/phase_01_foundation.md`
+- `docs/data_exploration_research.md`
+
+Each research phase records its objectives, methodology,
+experiments, findings, limitations and references.
