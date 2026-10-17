@@ -266,3 +266,54 @@ It does not reproduce the original transaction cleaning.
 
 Matching descriptive summaries does not establish
 external or business validity.
+
+## Phase 08 — Model Validation Notebook Restoration
+
+### Objective
+
+Restore the executable workflow for examining
+preprocessing and cluster-count sensitivity.
+
+### Methods
+
+- Pandas for research result inspection
+- Plotly for experiment visualizations
+- Existing scikit-learn-based project modules
+- Jupyter notebook execution with nbclient
+
+### Saved evidence
+
+- model_validation_results.csv
+- model_validation_best.csv
+- k2_cluster_diagnostics.csv
+
+### Notebook analysis
+
+- 18 saved configurations
+- Two preprocessing methods
+- K=2 through K=10
+- Silhouette and ARI comparisons
+- K=2 customer distribution investigation
+
+### Actual execution result
+
+Notebook execution: Pending verification.
+
+Full parameter-study reproduction:
+Not yet performed.
+
+### Limitations
+
+Reading the saved results does not independently
+reproduce the parameter study.
+
+A controlled re-execution and numerical comparison
+are required before claiming full reproducibility.
+
+### Next steps
+
+1. Inspect run_parameter_study() implementation.
+2. Verify random seeds and evaluation settings.
+3. Re-execute the 18 configurations.
+4. Compare regenerated and original results.
+5. Document any numerical differences.
