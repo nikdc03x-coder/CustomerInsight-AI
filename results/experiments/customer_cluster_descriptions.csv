@@ -1,0 +1,5 @@
+cluster,description
+0,lower time since last purchase; similar purchase frequency; lower positive spending
+1,higher time since last purchase; lower purchase frequency; lower positive spending
+2,lower time since last purchase; higher purchase frequency; higher positive spending
+3,similar time since last purchase; higher purchase frequency; higher positive spending
