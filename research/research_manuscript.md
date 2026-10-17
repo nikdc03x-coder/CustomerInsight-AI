@@ -360,3 +360,25 @@ separation of a comparatively small group of observations.
 
 A high silhouette score alone is insufficient to establish
 the practical usefulness of the segmentation.
+
+### Investigation of the High-Silhouette K=2 Configuration
+
+The parameter sensitivity experiment identified a K-Means configuration using standard-scaled RFM features and two clusters, achieving a silhouette score of 0.891827.
+
+To investigate this unusually high score, an additional diagnostic experiment examined the cluster sizes and purchasing characteristics.
+
+The resulting partition was highly imbalanced. Cluster 0 contained 4,312 customers (99.4%), whereas Cluster 1 contained only 26 customers (0.6%).
+
+Cluster 1 displayed substantially higher purchasing activity, with a median purchase frequency of 53 invoices and median positive spending of £59,796.87. In comparison, Cluster 0 had a median frequency of 2 invoices and median spending of £667.88.
+
+The smaller cluster also showed more recent purchasing activity, with a median recency of 3.5 days compared with 52 days for the larger cluster.
+
+These findings suggest that the high silhouette score is associated with separating a small group of exceptionally high-activity customers from the broader population.
+
+Although this configuration achieved stronger internal separation, the resulting partition may be less suitable for research objectives requiring several interpretable purchasing-behaviour segments.
+
+Conversely, the smaller cluster could be relevant to investigations of unusual or exceptionally high purchasing activity.
+
+Therefore, model selection should consider cluster size distribution, interpretability, assignment stability and the intended analytical objective alongside silhouette score.
+
+This experiment demonstrates why selecting the model with the highest internal validation score alone can lead to an incomplete assessment of customer segmentation quality.
