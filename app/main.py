@@ -66,6 +66,14 @@ def main():
         "Model Validation Studio",
         ":material/tune:",
     ),
+    
+
+page_if_available(
+    "pages/research_health.py",
+    "Research Quality Center",
+    ":material/fact_check:",
+),
+
 ],
 
     }
