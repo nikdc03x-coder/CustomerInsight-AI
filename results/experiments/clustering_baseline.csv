@@ -1,0 +1,4 @@
+algorithm,clusters,silhouette,coverage
+K-Means,4,0.3323721293344987,1.0
+Agglomerative,4,0.2705535150344624,1.0
+DBSCAN,2,0.2898036736122255,0.9818
