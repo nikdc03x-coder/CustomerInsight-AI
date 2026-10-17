@@ -229,3 +229,40 @@ of the baseline clustering experiments.
 It does not establish full pipeline
 reproducibility from the original raw
 transactions in a new environment.
+
+## Phase 06 — Customer Explainability Reproduction
+
+### Objective
+
+Verify whether the four customer-group profiles
+can be reproduced from the processed RFM dataset.
+
+### Method
+
+1. Load the existing customer RFM dataset.
+2. Recreate baseline K-Means assignments.
+3. Recalculate group counts and median RFM values.
+4. Compare reconstructed profiles with the saved results.
+5. Explain observed differences and limitations.
+
+### Libraries
+
+- pandas
+- NumPy
+- scikit-learn through the existing project module
+- Plotly
+- nbformat and nbclient
+
+### Actual Result
+
+Notebook execution: Pending verification.
+
+Cluster profile agreement: Pending verification.
+
+### Limitations
+
+This experiment begins with processed RFM records.
+It does not reproduce the original transaction cleaning.
+
+Matching descriptive summaries does not establish
+external or business validity.
