@@ -400,3 +400,21 @@ The verification output was saved to `results/reproducibility/clustering_compari
 These findings demonstrate successful numerical reproduction of the tested baseline clustering configurations in the current environment.
 
 However, complete end-to-end reproducibility remains unverified because source-data processing, other research experiments and clean-environment execution have not yet been independently reproduced.
+
+### A.6 Numerical Reproducibility Verification
+
+The baseline clustering experiments were re-executed using the processed customer-level RFM dataset containing 4,338 observations.
+
+All three baseline configurations—K-Means, Agglomerative Clustering and DBSCAN—reproduced their saved cluster counts, silhouette scores and coverage measurements. The recorded silhouette differences were zero.
+
+The experimental comparison is preserved in `results/reproducibility/clustering_comparison.csv`.
+
+Additional reproducibility verification covers the 18 K-Means sensitivity configurations and the Customer Explainability and Model Validation notebooks.
+
+**Model validation numerical agreement:** Pending final verification.
+
+**Customer explainability profile agreement:** Pending final verification.
+
+**Notebook execution results:** Pending final verification.
+
+Although the baseline clustering experiment has been successfully reproduced in the current Python environment, complete end-to-end reproducibility from the original source transactions and a fresh software environment remains unverified.
