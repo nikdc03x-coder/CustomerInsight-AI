@@ -1,0 +1,7 @@
+Notebook,Exists,Valid structure,Code cells,Executed cells,Cells with outputs,Status,Details
+data_exploration.ipynb,True,True,7,0,0,Execution not verified,Notebook exists and has code cells. A clean execution is still required.
+feature_engineering.ipynb,True,True,7,3,3,Execution not verified,Notebook exists and has code cells. A clean execution is still required.
+clustering_experiments.ipynb,True,True,0,0,0,Review,No code cells were found.
+stability_analysis.ipynb,True,True,6,4,4,Execution not verified,Notebook exists and has code cells. A clean execution is still required.
+customer_explainability.ipynb,True,True,0,0,0,Review,No code cells were found.
+model_validation.ipynb,True,True,0,0,0,Review,No code cells were found.
