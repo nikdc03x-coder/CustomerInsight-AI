@@ -206,3 +206,26 @@ for the tested configuration in the current environment.
 It would not independently establish correct
 customer-segment labels or reproducibility
 across different operating systems and environments.
+
+### Verified Results — 17 October 2026
+
+- Customers processed: 4,338
+- Prepared features: 3
+- Clustering configurations reproduced: 3/3
+- Cluster counts: All matched
+- Coverage measurements: All matched
+- Silhouette differences: 0.0
+- Automated tests: 49 passed
+
+### Interpretation
+
+All three baseline clustering configurations
+successfully reproduced their saved results
+in the current Python environment.
+
+This supports numerical reproducibility
+of the baseline clustering experiments.
+
+It does not establish full pipeline
+reproducibility from the original raw
+transactions in a new environment.

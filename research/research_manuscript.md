@@ -295,6 +295,36 @@ The findings are exploratory, dataset-specific and descriptive. They do not esta
 
 **Reference status:** These are verified resource pointers already included in the project manuscript, not a substitute for peer-reviewed related work. Before academic submission, add carefully reviewed original scholarly references and in-text citations for RFM, clustering methods, silhouette, ARI, stability and explainability. Do not cite unread work as if it had been reviewed.
 
+## References
+
+1. Fader, P. S., Hardie, B. G. S., & Lee, K. L. (2005).
+   RFM and CLV: Using iso-value curves for customer base analysis.
+   Journal of Marketing Research, 42(4), 415–430.
+   https://doi.org/10.1509/jmkr.2005.42.4.415
+
+2. Rousseeuw, P. J. (1987).
+   Silhouettes: A graphical aid to the interpretation and
+   validation of cluster analysis.
+   Journal of Computational and Applied Mathematics, 20, 53–65.
+   https://doi.org/10.1016/0377-0427(87)90125-7
+
+3. Hubert, L., & Arabie, P. (1985).
+   Comparing partitions.
+   Journal of Classification, 2, 193–218.
+   https://doi.org/10.1007/BF01908075
+
+4. von Luxburg, U. (2010).
+   Clustering stability: An overview.
+   Foundations and Trends in Machine Learning, 2(3), 235–274.
+   https://doi.org/10.1561/2200000008
+
+5. Ester, M., Kriegel, H.-P., Sander, J., & Xu, X. (1996).
+   A density-based algorithm for discovering clusters in
+   large spatial databases with noise.
+   Proceedings of the Second International Conference
+   on Knowledge Discovery and Data Mining.
+   https://aaai.org/papers/kdd96-037-a-density-based-algorithm-for-discovering-clusters-in-large-spatial-databases-with-noise/
+
 ## Appendix A. Computational Reproducibility
 
 ### A.1 Project environment
@@ -348,3 +378,25 @@ This table deliberately uses the **same research-question definitions** as Secti
 | **RQ4** — Interpretability             | Four customer-group counts and median RFM profiles             | `customer_cluster_profiles.csv`; `src/customerinsight/explanations.py`; `docs/explainability_research.md`                      |
 
 Relative file basenames in the table refer to the corresponding project `results/experiments/` directory unless a longer path is shown. File paths should be checked against the actual repository before release.
+
+### A.5 Baseline Clustering Reproduction
+
+The baseline clustering experiments were independently re-executed within the project's current Python environment using the saved processed dataset containing 4,338 customer-level RFM records.
+
+The reproduction used the existing feature-preparation and clustering functions, preserving the original algorithm configurations and silhouette evaluation settings.
+
+All three algorithms reproduced their saved numerical results:
+
+| Algorithm                | Original silhouette | Reproduced silhouette | Agreement |
+| ------------------------ | ------------------: | --------------------: | --------- |
+| K-Means                  |            0.332372 |              0.332372 | Matched   |
+| Agglomerative Clustering |            0.270554 |              0.270554 | Matched   |
+| DBSCAN                   |            0.289804 |              0.289804 | Matched   |
+
+The number of clusters and customer coverage also matched for every algorithm. All recorded silhouette differences were zero.
+
+The verification output was saved to `results/reproducibility/clustering_comparison.csv`.
+
+These findings demonstrate successful numerical reproduction of the tested baseline clustering configurations in the current environment.
+
+However, complete end-to-end reproducibility remains unverified because source-data processing, other research experiments and clean-environment execution have not yet been independently reproduced.
