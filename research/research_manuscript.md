@@ -41,25 +41,65 @@ CustomerInsight AI was developed as an experimental Python framework that integr
 
 The contribution is an integrated experimental and explanatory workflow, not a claim to have invented a new clustering algorithm. The study combines standard, established Python machine-learning methods with systematic comparisons, stability experiments, a targeted follow-up diagnostic and traceable descriptive findings. Business outcomes, causal explanations and predictive customer behavior are not evaluated.
 
-## 2. Related Work and Theoretical Background
+## 2. Related Work
 
-### 2.1 RFM-based customer representation
+### 2.1 RFM-Based Customer Behaviour Analysis
 
-RFM represents purchasing history through time since the most recent qualifying transaction (recency), the number of qualifying purchase occasions or invoices (frequency), and recorded expenditure (monetary). Its appeal for exploratory segmentation lies in its transparent connection to observed transaction data. Its limitation is that three summary features cannot describe all dimensions of customer behaviour.
+Recency, Frequency and Monetary (RFM) analysis provides a structured representation of customer purchasing behaviour. Recency describes how recently a customer purchased, frequency measures repeated purchasing activity, and monetary value summarizes historical expenditure.
 
-### 2.2 Unsupervised segmentation methods
+Fader, Hardie and Lee (2005) investigated the relationship between RFM measures and customer lifetime value. Their work demonstrates the relevance of purchasing-history variables to customer-base analysis, while also distinguishing observed transaction information from future customer value.
 
-K-Means partitions observations around cluster centers; Agglomerative Clustering forms groups through hierarchical merging; DBSCAN identifies density-connected groups and may label some points as noise. These methods embody different assumptions and need not produce directly comparable partitions even on the same customer representation.
+CustomerInsight AI uses RFM features as inputs for exploratory customer segmentation. Unlike a customer lifetime value prediction model, the present study does not estimate future spending or establish customer profitability.
 
-### 2.3 Internal validation and stability
+### 2.2 Unsupervised Clustering Methods
 
-The silhouette score evaluates within-group cohesion relative to separation from another group, under the chosen distance representation. Adjusted Rand index measures agreement between two partitions after adjustment for chance. Neither metric independently confirms that discovered groups represent true customer categories or create business value. A partition may also be stable while reflecting a persistent dataset artefact.
+Unsupervised clustering identifies patterns among observations without requiring predefined class labels.
 
-### 2.4 Explainability and reproducibility
+This research compares K-Means, Agglomerative Clustering and DBSCAN to examine how different clustering approaches partition customer-level purchasing data.
 
-Describing clusters in original RFM units allows readers to understand observed purchasing differences without interpreting standardized coordinates. Saving experiment tables, methods, random settings and data-preparation decisions improves auditability; full reproducibility additionally requires successfully rerunning the pipeline under a documented environment.
+Ester et al. (1996) introduced DBSCAN as a density-based clustering method designed to identify dense regions and distinguish noise observations. This provides a methodological foundation for including a density-based approach alongside partitioning and hierarchical algorithms.
 
-**Literature-review status:** The sections above provide conceptual background only. A publication-ready literature review still requires reading and citing verified original scholarly works addressing RFM segmentation, cluster validation, stability and interpretability. Specific paper claims and citations have intentionally not been invented.
+The present study compares specific configurations of these algorithms rather than attempting to establish their general superiority.
+
+### 2.3 Internal Cluster Validation
+
+Evaluating unsupervised clustering is challenging because correct customer-segment labels are generally unavailable.
+
+Rousseeuw (1987) introduced silhouette analysis as an approach for examining within-cluster cohesion and separation between clusters. The average silhouette score provides a measure of internal clustering structure.
+
+CustomerInsight AI uses silhouette scores to compare the tested algorithms and model configurations.
+
+However, internal validation does not establish that identified customer groups are commercially useful or externally valid. Accordingly, this study also investigates cluster sizes, purchasing characteristics and assignment stability.
+
+### 2.4 Cluster Assignment Stability
+
+Clustering results may change when initialization, training data or feature measurements are modified.
+
+Hubert and Arabie (1985) examined the comparison of data partitions and chance-adjusted agreement, providing a foundation for the Adjusted Rand Index used in this study.
+
+Von Luxburg (2010) reviewed clustering stability and its theoretical implications, including limitations of using stability as a criterion for cluster selection.
+
+Building on these methodological foundations, CustomerInsight AI evaluates K-Means assignment consistency under random initialization, training-subset variation and feature perturbations.
+
+The resulting ARI values measure similarity to a reference partition. They do not establish that the reference partition is objectively correct.
+
+### 2.5 Interpretability and Parameter Sensitivity
+
+Internal validation metrics and assignment stability describe statistical properties of clustering solutions, but do not necessarily explain the purchasing behaviour represented by the resulting groups.
+
+To improve interpretability, this study reports customer-group sizes and median values of the original RFM features rather than describing groups exclusively in standardized feature space.
+
+The research also compares 18 K-Means configurations using different preprocessing methods and cluster counts. An additional diagnostic experiment examines the unusually high silhouette score obtained from standard scaling with two clusters.
+
+Together, these analyses support a broader interpretation of clustering results that considers numerical evaluation, assignment agreement, group characteristics and the intended research objective.
+
+### 2.6 Positioning of the Present Study
+
+The contribution of CustomerInsight AI is the integration of established customer behaviour features, unsupervised clustering, internal validation, stability experiments, descriptive cluster profiling and research evidence traceability into a reproducible Python workflow.
+
+The study does not claim to introduce a new clustering algorithm or establish a universally optimal customer segmentation method.
+
+Instead, it investigates how complementary evaluation techniques can reveal limitations that may be missed when model selection relies on a single metric.
 
 ## 3. Dataset and Feature Construction
 
