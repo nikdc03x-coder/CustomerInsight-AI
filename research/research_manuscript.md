@@ -1,15 +1,15 @@
 # CustomerInsight AI: An Explainable and Stability-Aware Framework for Customer Behaviour Segmentation Using Unsupervised Machine Learning
 
 **Document type:** Research manuscript draft  
-**Status:** Consolidated draft — literature review and independent reproducibility verification outstanding  
+**Status:** Revised research draft — automated validation verified; independent numerical reproduction outstanding  
 **Research data:** UCI Online Retail, historical transactions from 2010–2011  
-**Last consolidated:** 17 October 2026
+**Last updated:** 17 October 2026
 
-> **Evidence note.** Numerical findings in this manuscript come from the experimental outputs reported for CustomerInsight AI. This draft does not claim independent replication, external validation, or a completed literature review. Statements about possible explanations and business applications are clearly distinguished from measured findings.
+> **Evidence note.** Numerical findings in this manuscript come from the experimental outputs reported for CustomerInsight AI. The project has passed 49 automated tests and four cross-file consistency checks, but complete notebook execution, independent numerical replication and external validation are not yet established. The literature review requires final verification against primary sources. Statements about possible explanations and business applications are clearly distinguished from measured findings.
 
 ## Abstract
 
-Customer segmentation aims to identify differences in purchasing behaviour that may assist exploratory retail analysis. This study investigates a reproducible, interpretable approach to segmentation using customer-level recency, frequency and monetary (RFM) features constructed from historical transactions in the UCI Online Retail dataset. Three unsupervised learning methods—K-Means, Agglomerative Clustering and DBSCAN—were evaluated in a baseline comparison. The four-cluster K-Means configuration achieved a silhouette score of **0.332372**, compared with **0.270554** for Agglomerative Clustering and **0.289804** for the evaluated DBSCAN configuration; the DBSCAN coverage was **98.18%**. Stability was assessed through 60 runs spanning random initialization, training-subset variation and feature noise, with mean adjusted Rand index (ARI) values of **0.9360**, **0.9413** and **0.9172**, respectively. The four-cluster solution described **4,338 customers** with different observed RFM profiles. A sensitivity study evaluated 18 K-Means configurations across two preprocessing approaches and cluster counts of 2–10. Although standard scaling with two clusters produced a high silhouette score (**0.891827**), a follow-up diagnostic found a highly imbalanced partition: **4,312 customers (99.40%)** in one group and **26 (0.60%)** in the other. This illustrates that high internal separation does not, by itself, establish useful broad segmentation. The project also includes an interactive research dashboard and a system for inspecting saved research evidence. Findings are descriptive and restricted to the dataset, configurations and validation conditions studied.
+Customer segmentation aims to identify differences in purchasing behaviour that may assist exploratory retail analysis. This study investigates a reproducible, interpretable approach to segmentation using customer-level recency, frequency and monetary (RFM) features constructed from historical transactions in the UCI Online Retail dataset. Three unsupervised learning methods—K-Means, Agglomerative Clustering and DBSCAN—were evaluated in a baseline comparison. The four-cluster K-Means configuration achieved a silhouette score of **0.332372**, compared with **0.270554** for Agglomerative Clustering and **0.289804** for the evaluated DBSCAN configuration; the DBSCAN coverage was **98.18%**. Stability was assessed through 60 runs spanning random initialization, training-subset variation and feature noise, with mean adjusted Rand index (ARI) values of **0.9360**, **0.9413** and **0.9172**, respectively. The four-cluster solution described **4,338 customers** with different observed RFM profiles. A sensitivity study evaluated 18 K-Means configurations across two preprocessing approaches and cluster counts of 2–10. Although standard scaling with two clusters produced a high silhouette score (**0.891827**), a follow-up diagnostic found a highly imbalanced partition: **4,312 customers (99.40%)** in one group and **26 (0.60%)** in the other. This illustrates that high internal separation does not, by itself, establish useful broad segmentation. The project also includes an interactive research dashboard, 49 passing automated tests, and four passing cross-file consistency checks. A notebook audit identified three notebooks without executable code cells; the clustering notebook has since been restored, although fresh numerical reproduction remains pending. Findings are descriptive and restricted to the dataset, configurations and validation conditions studied.
 
 **Keywords:** customer segmentation; RFM; K-Means; unsupervised learning; clustering stability; adjusted Rand index; silhouette score; explainable analytics; research reproducibility.
 
@@ -41,65 +41,25 @@ CustomerInsight AI was developed as an experimental Python framework that integr
 
 The contribution is an integrated experimental and explanatory workflow, not a claim to have invented a new clustering algorithm. The study combines standard, established Python machine-learning methods with systematic comparisons, stability experiments, a targeted follow-up diagnostic and traceable descriptive findings. Business outcomes, causal explanations and predictive customer behavior are not evaluated.
 
-## 2. Related Work
+## 2. Related Work and Theoretical Background
 
-### 2.1 RFM-Based Customer Behaviour Analysis
+### 2.1 RFM-based customer representation
 
-Recency, Frequency and Monetary (RFM) analysis provides a structured representation of customer purchasing behaviour. Recency describes how recently a customer purchased, frequency measures repeated purchasing activity, and monetary value summarizes historical expenditure.
+RFM represents purchasing history through time since the most recent qualifying transaction (recency), the number of qualifying purchase occasions or invoices (frequency), and recorded expenditure (monetary). Its appeal for exploratory segmentation lies in its transparent connection to observed transaction data. Its limitation is that three summary features cannot describe all dimensions of customer behaviour.
 
-Fader, Hardie and Lee (2005) investigated the relationship between RFM measures and customer lifetime value. Their work demonstrates the relevance of purchasing-history variables to customer-base analysis, while also distinguishing observed transaction information from future customer value.
+### 2.2 Unsupervised segmentation methods
 
-CustomerInsight AI uses RFM features as inputs for exploratory customer segmentation. Unlike a customer lifetime value prediction model, the present study does not estimate future spending or establish customer profitability.
+K-Means partitions observations around cluster centers; Agglomerative Clustering forms groups through hierarchical merging; DBSCAN identifies density-connected groups and may label some points as noise. These methods embody different assumptions and need not produce directly comparable partitions even on the same customer representation.
 
-### 2.2 Unsupervised Clustering Methods
+### 2.3 Internal validation and stability
 
-Unsupervised clustering identifies patterns among observations without requiring predefined class labels.
+The silhouette score evaluates within-group cohesion relative to separation from another group, under the chosen distance representation. Adjusted Rand index measures agreement between two partitions after adjustment for chance. Neither metric independently confirms that discovered groups represent true customer categories or create business value. A partition may also be stable while reflecting a persistent dataset artefact.
 
-This research compares K-Means, Agglomerative Clustering and DBSCAN to examine how different clustering approaches partition customer-level purchasing data.
+### 2.4 Explainability and reproducibility
 
-Ester et al. (1996) introduced DBSCAN as a density-based clustering method designed to identify dense regions and distinguish noise observations. This provides a methodological foundation for including a density-based approach alongside partitioning and hierarchical algorithms.
+Describing clusters in original RFM units allows readers to understand observed purchasing differences without interpreting standardized coordinates. Saving experiment tables, methods, random settings and data-preparation decisions improves auditability; full reproducibility additionally requires successfully rerunning the pipeline under a documented environment.
 
-The present study compares specific configurations of these algorithms rather than attempting to establish their general superiority.
-
-### 2.3 Internal Cluster Validation
-
-Evaluating unsupervised clustering is challenging because correct customer-segment labels are generally unavailable.
-
-Rousseeuw (1987) introduced silhouette analysis as an approach for examining within-cluster cohesion and separation between clusters. The average silhouette score provides a measure of internal clustering structure.
-
-CustomerInsight AI uses silhouette scores to compare the tested algorithms and model configurations.
-
-However, internal validation does not establish that identified customer groups are commercially useful or externally valid. Accordingly, this study also investigates cluster sizes, purchasing characteristics and assignment stability.
-
-### 2.4 Cluster Assignment Stability
-
-Clustering results may change when initialization, training data or feature measurements are modified.
-
-Hubert and Arabie (1985) examined the comparison of data partitions and chance-adjusted agreement, providing a foundation for the Adjusted Rand Index used in this study.
-
-Von Luxburg (2010) reviewed clustering stability and its theoretical implications, including limitations of using stability as a criterion for cluster selection.
-
-Building on these methodological foundations, CustomerInsight AI evaluates K-Means assignment consistency under random initialization, training-subset variation and feature perturbations.
-
-The resulting ARI values measure similarity to a reference partition. They do not establish that the reference partition is objectively correct.
-
-### 2.5 Interpretability and Parameter Sensitivity
-
-Internal validation metrics and assignment stability describe statistical properties of clustering solutions, but do not necessarily explain the purchasing behaviour represented by the resulting groups.
-
-To improve interpretability, this study reports customer-group sizes and median values of the original RFM features rather than describing groups exclusively in standardized feature space.
-
-The research also compares 18 K-Means configurations using different preprocessing methods and cluster counts. An additional diagnostic experiment examines the unusually high silhouette score obtained from standard scaling with two clusters.
-
-Together, these analyses support a broader interpretation of clustering results that considers numerical evaluation, assignment agreement, group characteristics and the intended research objective.
-
-### 2.6 Positioning of the Present Study
-
-The contribution of CustomerInsight AI is the integration of established customer behaviour features, unsupervised clustering, internal validation, stability experiments, descriptive cluster profiling and research evidence traceability into a reproducible Python workflow.
-
-The study does not claim to introduce a new clustering algorithm or establish a universally optimal customer segmentation method.
-
-Instead, it investigates how complementary evaluation techniques can reveal limitations that may be missed when model selection relies on a single metric.
+**Literature-review status:** A separate foundational literature review and research log were added to the project after the first draft. This manuscript still needs the final checked in-text citations and bibliographic entries integrated and reconciled with that review before academic submission.
 
 ## 3. Dataset and Feature Construction
 
@@ -129,11 +89,11 @@ The processed customer-level dataset is stored at `data/processed/customer_rfm.c
 
 ### 4.1 Feature preprocessing
 
-The baseline clustering experiments used `log1p` transformation followed by standardization of RFM features. This transformation reduces the influence of large raw differences in non-negative RFM values. The sensitivity experiments compared this representation with **standard scaling without the logarithmic transformation**. Because these transformations change the feature-space distances, silhouette values calculated under different preprocessing representations require careful interpretation.
+The baseline clustering experiments applied `numpy.log1p` to the non-negative recency, frequency and monetary features, then fitted scikit-learn `StandardScaler` to the transformed data. The feature preparation function rejects missing, non-finite and negative RFM inputs. This transformation reduces the influence of large raw differences in non-negative RFM values. The sensitivity experiments compared this representation with **standard scaling without the logarithmic transformation**. Because these transformations change the feature-space distances, silhouette values calculated under different preprocessing representations require careful interpretation.
 
 ### 4.2 Baseline algorithm comparison
 
-The study evaluated three configurations: K-Means with four clusters, Agglomerative Clustering with four clusters, and a DBSCAN configuration producing two non-noise groups. Silhouette score was used for internal clustering assessment. Coverage reports the proportion of observations assigned to non-noise groups; it is particularly relevant to DBSCAN, which may designate points as noise. Comparisons apply only to these tested configurations and evaluation conventions.
+The tested configurations were K-Means (`n_clusters=4`, `random_state=42`, `n_init=10`), Agglomerative Clustering (`n_clusters=4`, with other options left at library defaults) and DBSCAN (`eps=0.5`, `min_samples=10`, with other options left at library defaults). DBSCAN produced two non-noise groups. Silhouette scores were computed with scikit-learn `silhouette_score`, sampling up to 2,000 eligible observations with `random_state=42`. DBSCAN noise (`label=-1`) was excluded from its silhouette calculation. Coverage reports the proportion of observations assigned to non-noise groups; it is particularly relevant to DBSCAN, which may designate points as noise. Comparisons apply only to these tested configurations and evaluation conventions.
 
 ### 4.3 Assignment-stability experiments
 
@@ -159,7 +119,7 @@ The standard-scaled K=2 solution achieved a noticeably higher silhouette score t
 
 ### 4.7 Research output inspection
 
-The project stores experiment results as CSV tables and presents them through Streamlit. A research audit checks expected file availability and selected schema/numerical constraints. Additional consistency checks were proposed and implemented in the project workflow, but this manuscript does not claim verified passing reconciliation results because their execution output has not been supplied. File availability should not be confused with scientific correctness or reproduction of the entire workflow.
+The project stores experiment results as CSV tables and presents them through Streamlit. A research audit checks expected file availability and selected schema/numerical constraints. The latest reported run of the full automated suite passed **49 tests (49/49 in 4.11 seconds)**. Four implemented cross-file checks also passed: customer coverage (4,338 of 4,338 represented), stability-summary agreement (all three experimental conditions), unique stability run identifiers (60 of 60), and unique model-validation configurations (18 of 18). These are structural and cross-file checks, not complete validation of experimental conclusions or independent reproduction.
 
 ## 5. Experimental Results
 
@@ -267,8 +227,8 @@ The project demonstrates the value of combining algorithm comparison, stability 
 6. **Metric limitations:** Silhouette and ARI quantify specific mathematical properties, not business usefulness or causal relationships.
 7. **Cluster-size imbalance:** The high-scoring K=2 model showed extreme imbalance. This is informative diagnostically but not a sufficient reason alone to reject it.
 8. **Incomplete external validation:** No prospective business experiment or independent retail dataset has verified the practical value of the groups.
-9. **Reproduction still pending:** Saving outputs and passing basic file audits does not independently establish successful rerun of every notebook and experiment in a clean environment.
-10. **Documentation gaps:** The precise data-cleaning counts, feature reference date, full runtime settings and verified scholarly citations need to be incorporated from original sources before formal submission.
+9. **Reproduction still pending:** The 49 passing automated tests and four passing consistency checks establish selected checks in the current environment, not complete regeneration of research outputs. Notebook audits identified three originally non-executable notebooks; one has since been restored without yet verifying experiment re-execution.
+10. **Documentation gaps:** The precise data-cleaning counts, feature reference date, full stability perturbation settings, scholarly citation review and numerical reproduction reports still need to be incorporated before formal submission.
 
 ## 8. Conclusion
 
@@ -293,78 +253,96 @@ The findings are exploratory, dataset-specific and descriptive. They do not esta
 1. UCI Machine Learning Repository. **Online Retail**. <https://archive.ics.uci.edu/dataset/352/online+retail>.
 2. scikit-learn developers. **scikit-learn documentation**. <https://scikit-learn.org/stable/>.
 
-**Reference status:** These are verified resource pointers already included in the project manuscript, not a substitute for peer-reviewed related work. Before academic submission, add carefully reviewed original scholarly references and in-text citations for RFM, clustering methods, silhouette, ARI, stability and explainability. Do not cite unread work as if it had been reviewed.
+**Reference status:** A foundational literature review is now present in the project documentation. The reference list in this manuscript is not yet reconciled with that work. Verify original papers and add matching in-text citations before formal submission.
 
-## References
-
-1. Fader, P. S., Hardie, B. G. S., & Lee, K. L. (2005).
-   RFM and CLV: Using iso-value curves for customer base analysis.
-   Journal of Marketing Research, 42(4), 415–430.
-   https://doi.org/10.1509/jmkr.2005.42.4.415
-
-2. Rousseeuw, P. J. (1987).
-   Silhouettes: A graphical aid to the interpretation and
-   validation of cluster analysis.
-   Journal of Computational and Applied Mathematics, 20, 53–65.
-   https://doi.org/10.1016/0377-0427(87)90125-7
-
-3. Hubert, L., & Arabie, P. (1985).
-   Comparing partitions.
-   Journal of Classification, 2, 193–218.
-   https://doi.org/10.1007/BF01908075
-
-4. von Luxburg, U. (2010).
-   Clustering stability: An overview.
-   Foundations and Trends in Machine Learning, 2(3), 235–274.
-   https://doi.org/10.1561/2200000008
-
-5. Ester, M., Kriegel, H.-P., Sander, J., & Xu, X. (1996).
-   A density-based algorithm for discovering clusters in
-   large spatial databases with noise.
-   Proceedings of the Second International Conference
-   on Knowledge Discovery and Data Mining.
-   https://aaai.org/papers/kdd96-037-a-density-based-algorithm-for-discovering-clusters-in-large-spatial-databases-with-noise/
-
-## Appendix A. Computational Reproducibility
+## Appendix A. Computational Reproducibility and Quality Assurance
 
 ### A.1 Project environment
 
-The implementation uses Python and existing libraries including Pandas, NumPy, scikit-learn, Plotly and Streamlit. The exact installed versions are to be taken from the generated `docs/research_environment.md`; no software versions are asserted here without the actual environment record.
+The research implementation uses Python and established packages including Pandas, NumPy, scikit-learn, Plotly and Streamlit. The project-generated environment record is `docs/research_environment.md`; the version information must be read directly from that file rather than inferred from the manuscript. The latest reported automated test session used a Python 3.12.6 virtual environment on Windows. This is the verification environment, not a claim that the complete study has been recreated on a separate machine.
 
-### A.2 Research artifacts
+### A.2 Baseline clustering settings verified from source code
 
-| Research stage           | Primary evidence                                                                |
-| ------------------------ | ------------------------------------------------------------------------------- |
-| RFM feature construction | `data/processed/customer_rfm.csv`                                               |
-| Baseline clustering      | `results/experiments/clustering_baseline.csv`                                   |
-| Stability experiments    | `results/experiments/stability_runs.csv`; `stability_summary.csv`               |
-| Cluster descriptions     | `results/experiments/customer_cluster_profiles.csv`                             |
-| Sensitivity study        | `results/experiments/model_validation_results.csv`; `model_validation_best.csv` |
-| K=2 investigation        | `results/experiments/k2_cluster_diagnostics.csv`                                |
-| Research manuscript      | `research/research_manuscript.md`                                               |
+The source functions `prepare_clustering_features(rfm)` and `run_clustering_experiments(features)` were inspected directly. They specify:
 
-### A.3 Basic verification commands
+| Component                  | Verified implementation setting                                                  |
+| -------------------------- | -------------------------------------------------------------------------------- |
+| Features                   | Non-negative RFM values; `log1p` followed by `StandardScaler`                    |
+| K-Means                    | `n_clusters=4`, `random_state=42`, `n_init=10`                                   |
+| Agglomerative Clustering   | `n_clusters=4`; unspecified options use installed scikit-learn defaults          |
+| DBSCAN                     | `eps=0.5`, `min_samples=10`; unspecified options use installed defaults          |
+| Silhouette                 | At most 2,000 sampled observations; `random_state=42`                            |
+| DBSCAN handling            | Noise labels (`-1`) omitted from silhouette sample; coverage reported separately |
+| Experiment function output | `(results_dataframe, labels_by_model)`; no file writes within this function      |
 
-From the repository root, in an activated Python virtual environment:
+The settings above clarify the baseline implementation. They do not establish exact replication of the original measurements until a fresh rerun is compared with saved outputs.
+
+### A.3 Verified automated tests and cross-file consistency
+
+The latest reported project execution produced **49 passing pytest tests**, with **zero failures** (4.11 seconds). The four cross-file checks also passed:
+
+| Check                           | Reported status | Observed agreement                                        |
+| ------------------------------- | --------------- | --------------------------------------------------------- |
+| Customer coverage               | Passed          | Cluster profiles total 4,338 of 4,338 RFM customers       |
+| Stability statistics            | Passed          | Three summary rows agree with recalculated run statistics |
+| Stability run identifiers       | Passed          | 60 of 60 experiment/run identifiers unique                |
+| Model validation configurations | Passed          | 18 of 18 preprocessing/K combinations unique              |
+
+These checks support the internal integrity of stored evidence but are not substitutes for fresh notebook execution, dataset regeneration or external validation.
+
+### A.4 Notebook readiness audit
+
+The first audit identified six existing and structurally valid notebooks. At that point, three had no code cells. The clustering notebook was then restored, and a second audit reported the following:
+
+| Research notebook               | Code cells | Saved executed cells | Audit interpretation                            |
+| ------------------------------- | ---------: | -------------------: | ----------------------------------------------- |
+| `data_exploration.ipynb`        |          7 |                    0 | Re-execution pending                            |
+| `feature_engineering.ipynb`     |          7 |                    3 | Clean re-execution pending                      |
+| `clustering_experiments.ipynb`  |          5 |                    0 | Restored; fresh experiment reproduction pending |
+| `stability_analysis.ipynb`      |          6 |                    4 | Clean re-execution pending                      |
+| `customer_explainability.ipynb` |          0 |                    0 | Requires executable notebook restoration        |
+| `model_validation.ipynb`        |          0 |                    0 | Requires executable notebook restoration        |
+
+The audit was generated by `scripts/audit_notebook_reproducibility.py` and saved as `results/reproducibility/notebook_audit.csv`. Saved execution counts are a historical indication of notebook output, not evidence of successful fresh execution.
+
+### A.5 Saved research artifacts
+
+| Research stage           | Primary evidence                                                                                    |
+| ------------------------ | --------------------------------------------------------------------------------------------------- |
+| RFM feature construction | `data/processed/customer_rfm.csv`                                                                   |
+| Baseline clustering      | `results/experiments/clustering_baseline.csv`                                                       |
+| Stability experiments    | `results/experiments/stability_runs.csv`; `results/experiments/stability_summary.csv`               |
+| Cluster descriptions     | `results/experiments/customer_cluster_profiles.csv`                                                 |
+| Sensitivity study        | `results/experiments/model_validation_results.csv`; `results/experiments/model_validation_best.csv` |
+| K=2 investigation        | `results/experiments/k2_cluster_diagnostics.csv`                                                    |
+| Notebook audit           | `results/reproducibility/notebook_audit.csv`                                                        |
+| Verification log         | `docs/reproducibility_research.md`                                                                  |
+| Environment record       | `docs/research_environment.md`                                                                      |
+
+### A.6 Verification commands
+
+From the project root after activating the Python virtual environment:
 
 ```bash
-python -m pytest -v
+python -m pytest -q
+python scripts/audit_notebook_reproducibility.py
 python scripts/research_evidence_summary.py
-python scripts/investigate_cluster_balance.py
+python -c "from pathlib import Path; from customerinsight.dashboard_audit import run_consistency_checks; print(run_consistency_checks(Path.cwd()).to_string(index=False))"
 python -m streamlit run app/main.py
 ```
 
-If `run_consistency_checks` has been incorporated into the audit module, inspect its output with:
+The original experiment modules were inspected and have no direct file-writing side effect in `run_clustering_experiments`; however, complete clustering re-execution and a comparison against the saved baseline have **not yet been reported as completed**. If `scripts/reproduce_clustering.py` is implemented and run, its output should be reviewed, recorded and saved separately under `results/reproducibility/`, leaving the original baseline untouched.
 
-```bash
-python -c "from pathlib import Path; from customerinsight.dashboard_audit import run_consistency_checks; print(run_consistency_checks(Path.cwd()).to_string(index=False))"
-```
+### A.7 Remaining reproduction requirements
 
-**Verification status:** Previous project-specific audit tests and saved research-file availability were reported as passing. The latest end-to-end test summary, cross-file reconciliation output, notebook execution in a clean environment and regenerated-results comparison were **not provided for this manuscript revision**. They should remain marked _unverified_ until run and documented.
+1. Reproduce the clustering comparison numerically and record score differences against `clustering_baseline.csv`.
+2. Restore the Customer Explainability and Model Validation notebooks as executable research narratives.
+3. Execute all notebooks from a clean kernel without overwriting verified original experiment outputs.
+4. Check regenerated RFM data, customer profiles and stability/validation outputs against saved evidence.
+5. Record the RFM reference date, source-data inclusion counts and all remaining experiment parameters.
+6. Validate the literature citations against primary publications and document environment dependency versions.
 
-### A.4 Pending experiment details
-
-For full reproducibility, record the actual RFM reference date, preprocessing parameterization, random seeds, `n_init`, hierarchical linkage settings, DBSCAN parameters, noise-handling conventions, silhouette computation details and perturbation settings by examining the original code and notebooks. Do not infer them from the summary tables.
+**Current conclusion:** File integrity, selected cross-file consistency and automated tests have been verified in the reported local environment. End-to-end numerical reproducibility and external validation remain outstanding.
 
 ## Appendix B. Research Evidence and Traceability
 
@@ -378,69 +356,3 @@ This table deliberately uses the **same research-question definitions** as Secti
 | **RQ4** — Interpretability             | Four customer-group counts and median RFM profiles             | `customer_cluster_profiles.csv`; `src/customerinsight/explanations.py`; `docs/explainability_research.md`                      |
 
 Relative file basenames in the table refer to the corresponding project `results/experiments/` directory unless a longer path is shown. File paths should be checked against the actual repository before release.
-
-### A.5 Baseline Clustering Reproduction
-
-The baseline clustering experiments were independently re-executed within the project's current Python environment using the saved processed dataset containing 4,338 customer-level RFM records.
-
-The reproduction used the existing feature-preparation and clustering functions, preserving the original algorithm configurations and silhouette evaluation settings.
-
-All three algorithms reproduced their saved numerical results:
-
-| Algorithm                | Original silhouette | Reproduced silhouette | Agreement |
-| ------------------------ | ------------------: | --------------------: | --------- |
-| K-Means                  |            0.332372 |              0.332372 | Matched   |
-| Agglomerative Clustering |            0.270554 |              0.270554 | Matched   |
-| DBSCAN                   |            0.289804 |              0.289804 | Matched   |
-
-The number of clusters and customer coverage also matched for every algorithm. All recorded silhouette differences were zero.
-
-The verification output was saved to `results/reproducibility/clustering_comparison.csv`.
-
-These findings demonstrate successful numerical reproduction of the tested baseline clustering configurations in the current environment.
-
-However, complete end-to-end reproducibility remains unverified because source-data processing, other research experiments and clean-environment execution have not yet been independently reproduced.
-
-### A.6 Numerical Reproducibility Verification
-
-The baseline clustering experiments were re-executed using the processed customer-level RFM dataset containing 4,338 observations.
-
-All three baseline configurations—K-Means, Agglomerative Clustering and DBSCAN—reproduced their saved cluster counts, silhouette scores and coverage measurements. The recorded silhouette differences were zero.
-
-The experimental comparison is preserved in `results/reproducibility/clustering_comparison.csv`.
-
-Additional reproducibility verification covers the 18 K-Means sensitivity configurations and the Customer Explainability and Model Validation notebooks.
-
-**Model validation numerical agreement:** Pending final verification.
-
-**Customer explainability profile agreement:** Pending final verification.
-
-**Notebook execution results:** Pending final verification.
-
-Although the baseline clustering experiment has been successfully reproduced in the current Python environment, complete end-to-end reproducibility from the original source transactions and a fresh software environment remains unverified.
-
-### Numerical Reproduction of Model Validation Experiments
-
-The model-validation sensitivity study was re-executed using the existing project implementation and processed customer-level RFM dataset.
-
-All 18 configurations were successfully reproduced across two preprocessing approaches and cluster counts ranging from K=2 to K=10.
-
-The regenerated silhouette scores, K-Means inertia measurements and Adjusted Rand Index values agreed with the original experimental results. The verification report recorded maximum absolute differences of 0.0000000000 for all three metrics at the reported precision.
-
-The numerical comparison is preserved in `results/reproducibility/model_validation_comparison.csv`.
-
-### Research Notebook Execution Verification
-
-The Customer Explainability and Model Validation notebooks were executed and their execution records inspected.
-
-The Customer Explainability notebook contained eight executed code cells with no recorded errors. The Model Validation notebook also contained eight executed code cells with no recorded errors.
-
-These findings establish successful execution of the saved notebook workflows under the tested environment.
-
-However, successful notebook execution alone does not establish independent numerical reproduction of every displayed finding. Customer-profile agreement requires separate confirmation using the reconstructed-versus-saved comparison.
-
-### Remaining Reproducibility Limitations
-
-The baseline clustering and model-validation experiments have demonstrated numerical agreement with their saved results in the current software environment.
-
-Full end-to-end reproducibility remains subject to re-execution of the original transaction-processing workflow, verification of the remaining notebooks and successful installation and execution in a fresh environment.
