@@ -22,6 +22,9 @@ data/raw/*
 data/processed/*
 !data/processed/.gitkeep
 
+data/datasets/*
+!data/datasets/.gitkeep
+
 # Generated research outputs
 results/figures/*
 !results/figures/.gitkeep

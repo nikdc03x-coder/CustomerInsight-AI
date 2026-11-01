@@ -8,7 +8,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from dashboard_ui import page_header, show_chart
+from dashboard_ui import page_header, show_chart, render_dataset_banner, get_active_dataset_id
 
 from customerinsight.explanations import assign_customer_clusters
 
@@ -61,21 +61,25 @@ COLORS = {
 
 
 @st.cache_data(show_spinner="Analysing customer behaviour...")
-def load_data():
-    """Load the saved RFM dataset and reproduce our baseline clusters."""
-
-    if not DATA_PATH.is_file():
-        raise FileNotFoundError(
-            "The customer RFM dataset is missing. "
-            "Run the Phase 03 feature engineering pipeline."
+def load_data(active_id: str = "online_retail"):
+    """Load the saved RFM dataset or compute dynamically for active dataset."""
+    if active_id == "online_retail":
+        if not DATA_PATH.is_file():
+            raise FileNotFoundError(
+                "The customer RFM dataset is missing. "
+                "Run the Phase 03 feature engineering pipeline."
+            )
+        rfm = pd.read_csv(
+            DATA_PATH,
+            dtype={"customer_id": "string"},
         )
-
-    rfm = pd.read_csv(
-        DATA_PATH,
-        dtype={"customer_id": "string"},
-    )
-
-    customers = assign_customer_clusters(rfm, clusters=4)
+        customers = assign_customer_clusters(rfm, clusters=4)
+    else:
+        from customerinsight.datasets import load_dataset_transactions
+        from customerinsight.analytics import calculate_rfm, segment_customers
+        df_trans = load_dataset_transactions(active_id)
+        rfm = calculate_rfm(df_trans)
+        customers = segment_customers(rfm, method="kmeans", n_clusters=4)
 
     # Sort by spending only to assign readable display letters.
     ordering = (
@@ -557,9 +561,11 @@ def main():
         benefit="Understand how groups differ without having to interpret transformed model inputs or clustering code.",
         technical="Four K-Means clusters use RFM features. Group letters are display identifiers ordered by median spending; they are not rankings of loyalty or profitability.",
     )
+    render_dataset_banner()
 
+    active_id = get_active_dataset_id()
     try:
-        customers = load_data()
+        customers = load_data(active_id)
     except (FileNotFoundError, ValueError, KeyError) as error:
         st.error(f"Unable to load customer analysis: {error}")
         st.stop()

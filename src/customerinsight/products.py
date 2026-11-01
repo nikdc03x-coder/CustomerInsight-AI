@@ -1,6 +1,6 @@
 """Product intelligence, catalog performance, and Market Basket Analysis."""
 
-from collections import Counter
+from collections import Counter, defaultdict
 from itertools import combinations
 from typing import Any
 
@@ -91,8 +91,11 @@ def run_market_basket_analysis(
     if valid.empty:
         return pd.DataFrame(columns=["antecedent", "consequent", "support", "confidence", "lift", "order_count"])
 
-    # Build basket sets per order
-    baskets = valid.groupby("order_id")[item_col].apply(lambda s: set(s.dropna())).tolist()
+    # Build basket sets per order efficiently
+    order_items = defaultdict(set)
+    for oid, item in zip(valid["order_id"], valid[item_col]):
+        order_items[oid].add(item)
+    baskets = list(order_items.values())
     total_orders = len(baskets)
     if total_orders < 2:
         return pd.DataFrame(columns=["antecedent", "consequent", "support", "confidence", "lift", "order_count"])
@@ -111,11 +114,10 @@ def run_market_basket_analysis(
         frequent_items = dict(item_counts.most_common(50))
         min_count = 1
 
-    # 2. Count pair co-occurrences
+    # 2. Count pair co-occurrences (capping basket size at 30 items to prevent combinatorial explosion on wholesale orders)
     pair_counts: Counter[tuple[str, str]] = Counter()
     for basket in baskets:
-        # Keep only frequent items to minimize combinatorial explosion
-        filtered_basket = sorted([item for item in basket if item in frequent_items])
+        filtered_basket = sorted([item for item in basket if item in frequent_items])[:30]
         if len(filtered_basket) >= 2:
             for pair in combinations(filtered_basket, 2):
                 pair_counts[pair] += 1

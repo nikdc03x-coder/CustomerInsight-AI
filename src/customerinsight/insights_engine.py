@@ -24,7 +24,11 @@ class BusinessInsight:
         return asdict(self)
 
 
-def generate_business_insights(df: pd.DataFrame, rfm: pd.DataFrame | None = None) -> list[BusinessInsight]:
+def generate_business_insights(
+    df: pd.DataFrame,
+    rfm: pd.DataFrame | None = None,
+    currency: str = "GBP",
+) -> list[BusinessInsight]:
     """Generate evidence-grounded strategic insights from actual customer and transaction metrics."""
     insights: list[BusinessInsight] = []
     if df.empty:
@@ -106,7 +110,7 @@ def generate_business_insights(df: pd.DataFrame, rfm: pd.DataFrame | None = None
 
     # 4. Market Basket Cross-Sell Opportunity
     try:
-        rules = run_market_basket_analysis(df, min_support=0.005, min_confidence=0.10, min_lift=1.5, max_rules=5)
+        rules = run_market_basket_analysis(df, min_support=0.015, min_confidence=0.15, min_lift=1.5, max_rules=5)
         if not rules.empty:
             best_rule = rules.iloc[0]
             insights.append(BusinessInsight(

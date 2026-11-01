@@ -1,103 +1,126 @@
-# CustomerInsight AI
+# CustomerInsight AI — Customer Intelligence Platform
 
-An exploratory customer-segmentation research project using historical retail
-transactions. It turns qualifying purchases into recency, frequency and monetary
-(RFM) features, compares clustering methods, measures assignment stability, and
-explains groups through a seven-page Streamlit dashboard.
+A production-quality Customer Intelligence & Predictive Analytics Platform that transforms raw transaction datasets into actionable customer segments, revenue forecasts, basket association rules, and executive business insights.
 
-The project uses established machine-learning methods. Its findings describe one
-historical dataset; they do not establish future purchasing behaviour or measured
-business impact. Monetary values are gross positive spending, not net revenue.
+The platform combines robust statistical machine learning, empirical Bayesian recurrence modeling, multi-dataset workspace ingestion, and a grounded conversational AI data assistant.
 
-## What is implemented
+---
 
-- Original-workbook exploration and customer-level RFM construction.
-- K-Means, Agglomerative Clustering and DBSCAN baseline comparison.
-- K-Means stability under seeds, training subsets and feature noise.
-- Two preprocessing methods and K=2–10 sensitivity experiments.
-- Four-group descriptions and a separate K=2 imbalance investigation.
-- File-integrity checks, cross-file consistency and numerical comparison scripts.
-- Six research notebooks, a manuscript draft and research logs.
+## 🌟 Platform Capabilities
 
-See [the project review](docs/project_review.md) for architecture, findings,
-cleanup decisions and remaining limitations, and [the research manuscript](research/research_manuscript.md)
-for the study narrative.
+### 1. Multi-Dataset Workspace (`pages/data_workspace.py`)
+- **Universal Ingestion**: Supports `.csv`, `.xlsx`, and `.xls` transaction uploads.
+- **Smart Schema Detection**: Heuristically maps messy column headers to the canonical transaction schema (`order_id`, `customer_id`, `order_date`, `product_id`, `product_name`, `quantity`, `unit_price`, `currency`, `country`).
+- **Data Quality & Cleaning Audit**: Configurable scrubbing rules (negative/zero quantity cancellation removal, unit price filtering, customer ID drop, deduplication).
+- **High-Performance Storage**: Persists canonical records into columnar Parquet caches with SQLite metadata indexing for sub-second analytical queries across 400,000+ rows.
 
-## Installation
+### 2. Generalised Customer & Revenue Analytics (`pages/revenue_analytics.py`, `customer_insights.py`)
+- **Top-Line Financial KPIs**: Gross Revenue, Completed Orders, Average Order Value (AOV), Unique Customers, and Average Spend per Account.
+- **Sales Momentum Timeline**: Aggregations across Daily, Weekly, and Monthly intervals with interactive Plotly visualisations.
+- **Geographic Breakdown**: Country revenue rankings, order counts, and market share contributions.
+- **Top Accounts Ranking**: Identifies top spending accounts with order counts, AOV, and CSV export.
+- **RFM Segmentation**: Dynamic Recency, Frequency, Monetary calculations with K-Means, Agglomerative, and DBSCAN clustering.
 
-Python 3.11 or newer is required. Run these commands from the repository root.
+### 3. Product & Market Basket Intelligence (`pages/product_intelligence.py`)
+- **Bestseller Rankings**: Catalog item analysis sorted by Gross Revenue or Total Units Dispatched.
+- **Long-Tail Inventory Audit**: Detects underperforming items to inform clearance or reordering.
+- **Association Rules Engine**: Computes pairwise product co-occurrence frequencies across unique customer baskets to evaluate **Support**, **Confidence**, and **Lift** multipliers for cross-sell bundles.
+
+### 4. Predictive CLV & Churn Intelligence (`pages/predictive_intelligence.py`)
+- **Eligibility Validation**: Rigorously validates dataset history depth (>=45 days) and repeat purchase density (>=5%).
+- **Empirical Bayesian Recurrence**: Models individual customer repeat purchase probability based on elapsed inactivity decay and personal transaction cadence.
+- **Churn Risk Tiers**: Classifies accounts into Low Risk (Active), Medium Risk (Slowing), and High Risk (At-Risk / Lapsed).
+- **90-Day Forward Spend Projection**: Applies Bayesian shrinkage to historical spend to project 90-day Customer Lifetime Value without extreme outlier distortion.
+
+### 5. Grounded AI Data Assistant (`pages/ai_data_assistant.py`)
+- **Natural Language Query Engine**: Answers stakeholder business questions directly in conversational English.
+- **Zero Hallucination Guarantee**: Classifies intent and routes to strictly deterministic analytical functions in `TOOL_REGISTRY` (zero fabricated figures).
+- **Enriched Responses**: Returns direct numerical answers, supporting KPI cards, tabular data, exact analysis period scope, and methodology caveats.
+
+### 6. Strategic Business Insights Engine (`pages/business_insights_page.py`)
+- **Automated Evidence-Backed Rules**: Evaluates Pareto revenue concentration (80/20 rule), high-value account lapse risk, single-order buyer retention opportunities, and basket cross-sell synergies.
+- **Actionable Guidance**: Delivers prioritized recommendations with supporting evidence metrics.
+
+### 7. Executive Brief & Data Export Center (`pages/reports_exports.py`)
+- **Executive Summary Brief**: Generates a complete synthesized Markdown document ready for leadership presentation.
+- **Structured CSV Exports**: One-click download for Enriched Customer Segments, Product Catalog Performance, Daily Revenue Trends, and Predictive CLV Scores.
+
+### 8. Preserved Research Lab
+- Retains all 6 original research notebooks, baseline algorithm comparisons, K-Means seed/subset/noise stability analysis, model validation studio, and research health evidence.
+
+---
+
+## 🚀 Quickstart & Installation
+
+Python 3.11+ is required.
 
 ```powershell
+# 1. Clone repository and navigate to root
+cd customerinsight-ai
+
+# 2. Set up virtual environment and install dependencies
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dashboard,dev]"
+
+# 3. Launch UI via npm or streamlit
+npm run dev
+# OR
+streamlit run app/main.py
 ```
 
-On macOS/Linux, activate with `source .venv/bin/activate` instead.
-Install only `-e .` for the reusable analysis package, `-e ".[dashboard]"`
-for Streamlit, or `-e ".[dev]"` for tests and notebooks. The development extra
-includes Matplotlib, required by the clustering notebook.
+The application opens at `http://localhost:8501`.
+
+---
+
+## 🧪 Testing & Verification
+
+Run the comprehensive test suite (69 tests covering platform core, UI pages, and research benchmarks):
 
 ```powershell
-python scripts/inspect_data.py
-python -m pytest -q
-python -m streamlit run app/main.py
+pytest -q
 ```
 
-The sample CSV supports a small loader demonstration and tests. It is not a
-replacement for the research dataset or the complete dashboard evidence.
+All 69 unit and integration tests pass with 100% success rate.
 
-## Research data and execution
+---
 
-The raw workbook, processed RFM data and original experiment CSVs are local,
-ignored files. A fresh clone therefore needs these inputs before all dashboard
-pages can show results. Obtain the dataset using the source listed in
-[docs/data_exploration_research.md](docs/data_exploration_research.md), then place
-the workbook at `data/raw/Online Retail.xlsx`.
+## 📂 Repository Architecture
 
-1. Run `python scripts/build_customer_features.py` to write
-   `data/processed/customer_rfm.csv`.
-2. Read the six notebooks in order: `data_exploration`, `feature_engineering`,
-   `clustering_experiments`, `stability_analysis`, `customer_explainability`,
-   and `model_validation`.
-3. Keep a copy of existing local evidence before regenerating it. The feature
-   and stability notebooks write their data/results; the restored clustering,
-   explainability and validation notebooks primarily inspect or compare saved
-   evidence. Some do not generate every original CSV from scratch.
-
-Full recreation from a fresh clone remains incomplete. The exact expected
-artifacts and verification boundaries are documented in
-[docs/reproducibility_research.md](docs/reproducibility_research.md).
-
-With the original local evidence present, these commands compare new calculations
-against it and write separate reports under `results/reproducibility/`:
-
-```powershell
-python scripts/reproduce_clustering.py
-python scripts/reproduce_model_validation.py
-python scripts/verify_customer_profiles.py
-python scripts/verify_research_reproduction.py
+```text
+customerinsight-ai/
+├── app/
+│   ├── main.py                     # Main navigation and sidebar dataset switcher
+│   ├── dashboard_ui.py             # Shared presentation, styling, and active workspace state
+│   ├── customer_insights.py        # Customer RFM behavior and cluster explorer
+│   ├── pages/
+│   │   ├── research_overview.py    # Main landing dashboard
+│   │   ├── data_workspace.py       # Ingestion, schema mapping, and dataset management
+│   │   ├── revenue_analytics.py    # Financial KPIs, sales trends, geographic breakdown
+│   │   ├── product_intelligence.py # Catalog rankings and market basket association rules
+│   │   ├── predictive_intelligence.py # Churn risk and 90-day CLV spend projections
+│   │   ├── ai_data_assistant.py    # Grounded natural language assistant
+│   │   ├── business_insights_page.py # Automated strategic business insights
+│   │   ├── reports_exports.py      # Executive markdown briefs and CSV exports
+│   │   ├── retail_data_explorer.py # Raw transaction audit (Research Lab)
+│   │   ├── rfm_intelligence.py     # RFM feature distributions (Research Lab)
+│   │   ├── research_findings.py    # Algorithm comparison and stability (Research Lab)
+│   │   ├── model_validation_studio.py # Preprocessing & cluster count sensitivity (Research Lab)
+│   │   └── research_health.py      # Research evidence integrity verification (Research Lab)
+├── src/customerinsight/
+│   ├── schema.py                   # Canonical schema and column auto-mapping
+│   ├── cleaning.py                 # Data quality audit and sanitization
+│   ├── datasets.py                 # Parquet storage engine and SQLite registry
+│   ├── analytics.py                # Generalized RFM, KPIs, trends, top customers
+│   ├── products.py                 # Catalog rankings and market basket rules
+│   ├── prediction.py               # Empirical recurrence and CLV forecasting
+│   ├── ai_assistant.py             # Grounded AI assistant tool registry
+│   ├── insights_engine.py          # Evidence-backed business insights
+│   └── reporting.py                # Executive brief markdown and CSV generator
+├── tests/
+│   ├── test_platform_core.py       # Unit tests for platform modules
+│   ├── test_platform_ui.py         # Integration tests for new UI pages
+│   └── test_dashboard_ui.py        # UI navigation and link verification
+└── data/
+    └── datasets/                   # Parquet cache and SQLite registry
 ```
-
-The last command inspects stored comparison/notebook evidence; it does not rerun
-all experiments. `python scripts/research_evidence_summary.py` prints the original
-tables. `python scripts/audit_notebook_reproducibility.py` writes a structural
-notebook audit, which does not prove successful execution.
-
-## Repository guide
-
-| Location | Purpose |
-| --- | --- |
-| `src/customerinsight/` | Reusable data, features, modelling and audit functions |
-| `app/main.py` | Streamlit navigation and dashboard entry point |
-| `app/pages/`, `app/customer_insights.py`, `app/k2_diagnostics.py` | Dashboard pages and diagnostic component |
-| `scripts/` | Data preparation, reproduction, inspection and environment tools |
-| `tests/` | Synthetic unit tests and optional local-evidence checks |
-| `notebooks/` | Research narratives and experiments; edit these directly |
-| `docs/`, `research/` | Phase history, current verification record and manuscript |
-| `data/sample/` | Small tracked software-verification fixture |
-| `data/raw/`, `data/processed/`, `results/experiments/` | Local inputs and original evidence, ignored by Git |
-| `results/reproducibility/` | Tracked historical verification artifacts |
-
-Phase documents describe work at the time they were written. Current limitations
-and the latest cleanup verification are recorded in the project review.

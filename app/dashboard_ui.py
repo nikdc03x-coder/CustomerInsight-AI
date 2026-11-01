@@ -11,6 +11,14 @@ PALETTE = ["#147D72", "#5779B3", "#A581BD", "#CF9950", "#8195A5"]
 
 DESTINATIONS = [
     {
+        "key": "workspace", "path": "pages/data_workspace.py",
+        "title": "Data workspace", "icon": ":material/dataset:",
+        "category": "Workspace & Data",
+        "description": "Upload CSV/Excel datasets, auto-detect schemas, audit quality, and manage active datasets.",
+        "benefit": "Switch seamlessly between custom datasets or the built-in online retail dataset.",
+        "action": "Manage datasets",
+    },
+    {
         "key": "customers", "path": "customer_insights.py",
         "title": "Customer behaviour", "icon": ":material/groups:",
         "category": "Understand your customers",
@@ -19,9 +27,57 @@ DESTINATIONS = [
         "action": "Explore customer groups",
     },
     {
+        "key": "revenue", "path": "pages/revenue_analytics.py",
+        "title": "Revenue analytics", "icon": ":material/payments:",
+        "category": "Understand your customers",
+        "description": "Track total revenue, average order value, sales trends and geographic concentration.",
+        "benefit": "Monitor top-line business metrics and high-value customer accounts.",
+        "action": "Explore revenue",
+    },
+    {
+        "key": "products", "path": "pages/product_intelligence.py",
+        "title": "Product & basket intelligence", "icon": ":material/shopping_basket:",
+        "category": "Understand your customers",
+        "description": "Discover bestsellers, underperforming inventory, and market basket association rules.",
+        "benefit": "Identify cross-sell bundles with support, confidence and lift metrics.",
+        "action": "Explore products & baskets",
+    },
+    {
+        "key": "predictive", "path": "pages/predictive_intelligence.py",
+        "title": "Predictive CLV & churn", "icon": ":material/vital_signs:",
+        "category": "Understand your customers",
+        "description": "Estimate customer recurrence probability, churn risk classification, and projected 90-day spend.",
+        "benefit": "Target high-value customers before they lapse.",
+        "action": "Explore predictions",
+    },
+    {
+        "key": "assistant", "path": "pages/ai_data_assistant.py",
+        "title": "AI data assistant", "icon": ":material/smart_toy:",
+        "category": "AI & Strategy",
+        "description": "Ask natural language questions answered strictly by deterministic calculations on your dataset.",
+        "benefit": "Get reliable data answers with zero hallucinated figures.",
+        "action": "Ask assistant",
+    },
+    {
+        "key": "insights", "path": "pages/business_insights_page.py",
+        "title": "Business insights engine", "icon": ":material/lightbulb:",
+        "category": "AI & Strategy",
+        "description": "Automated executive-ready findings across revenue concentration, churn risk, and cross-sell.",
+        "benefit": "Turn raw patterns into prioritized, evidence-backed actions.",
+        "action": "View insights",
+    },
+    {
+        "key": "reports", "path": "pages/reports_exports.py",
+        "title": "Reports & exports", "icon": ":material/summarize:",
+        "category": "AI & Strategy",
+        "description": "Generate an executive markdown brief and export customer segment CSV lists.",
+        "benefit": "Share verified findings with stakeholders and sync with CRM tools.",
+        "action": "Generate reports",
+    },
+    {
         "key": "rfm", "path": "pages/rfm_intelligence.py",
         "title": "Purchasing patterns", "icon": ":material/monitoring:",
-        "category": "Understand your customers",
+        "category": "Examine the research",
         "description": "Explore when customers last purchased, how often they buy and what they spend.",
         "benefit": "Understand the RFM measures behind every customer group.",
         "action": "Explore purchasing patterns",
@@ -29,7 +85,7 @@ DESTINATIONS = [
     {
         "key": "retail", "path": "pages/retail_data_explorer.py",
         "title": "Retail data", "icon": ":material/table_view:",
-        "category": "Understand your customers",
+        "category": "Examine the research",
         "description": "Inspect the original transactions, data quality, monthly activity and countries.",
         "benefit": "Spot gaps in the source data before interpreting customer patterns.",
         "action": "Inspect retail data",
@@ -207,33 +263,52 @@ def section_header(title, description):
 
 def workspace_cards():
     """Direct native links to every existing analytical workspace."""
-    for category in ("Understand your customers", "Examine the research"):
-        section_header(
-            category,
-            "Start with the data, then explore the people behind it."
-            if category == "Understand your customers"
-            else "Review the methods, model choices and evidence behind the findings.",
-        )
-        columns = st.columns(3, gap="medium")
-        destinations = [item for item in DESTINATIONS if item["category"] == category]
-        for column, destination in zip(columns, destinations):
-            with column:
-                with st.container(border=True, height="stretch", key=f"ci-card-{destination['key']}"):
-                    label = {
-                        "customers": "CUSTOMER GROUPS", "rfm": "RFM FEATURES",
-                        "retail": "TRANSACTIONS", "comparison": "METHODS",
-                        "validation": "MODEL SETTINGS", "quality": "EVIDENCE",
-                    }[destination["key"]]
-                    st.markdown(f'<span class="ci-card-number">{label}</span>', unsafe_allow_html=True)
-                    st.subheader(destination["title"], anchor=False)
-                    st.write(destination["description"])
-                    st.caption(destination["benefit"])
-                    if st.session_state.get("_ci_navigation_ready", False):
-                        st.page_link(
-                            str(APP_DIR / destination["path"]), label=destination["action"],
-                            icon=destination["icon"], width="stretch",
-                        )
-        st.write("")
+    categories = [
+        (
+            "Customer Intelligence & Analytics",
+            ["customers", "revenue", "products", "predictive"],
+            "Explore customer groups, revenue momentum, product bestsellers and predictive CLV.",
+        ),
+        (
+            "AI & Strategy",
+            ["assistant", "insights", "reports"],
+            "Query your data with grounded AI, review strategic insights and export briefs.",
+        ),
+        (
+            "Examine the Research Lab",
+            ["retail", "rfm", "comparison", "validation", "quality"],
+            "Review benchmark experiments, clustering algorithms and model validation evidence.",
+        ),
+    ]
+    by_key = {item["key"]: item for item in DESTINATIONS}
+    for cat_title, keys, cat_desc in categories:
+        section_header(cat_title, cat_desc)
+        items = [by_key[k] for k in keys if k in by_key]
+        for row_start in range(0, len(items), 3):
+            row_items = items[row_start : row_start + 3]
+            cols = st.columns(3, gap="medium")
+            for col, destination in zip(cols, row_items):
+                with col:
+                    with st.container(border=True, height="stretch", key=f"ci-card-{destination['key']}"):
+                        label = {
+                            "workspace": "DATA WORKSPACE",
+                            "customers": "CUSTOMER GROUPS", "rfm": "RFM FEATURES",
+                            "retail": "TRANSACTIONS", "comparison": "METHODS",
+                            "validation": "MODEL SETTINGS", "quality": "EVIDENCE",
+                            "revenue": "REVENUE", "products": "PRODUCTS",
+                            "predictive": "PREDICTIONS", "assistant": "AI ASSISTANT",
+                            "insights": "BUSINESS INSIGHTS", "reports": "REPORTS",
+                        }.get(destination["key"], "ANALYSIS")
+                        st.markdown(f'<span class="ci-card-number">{label}</span>', unsafe_allow_html=True)
+                        st.subheader(destination["title"], anchor=False)
+                        st.write(destination["description"])
+                        st.caption(destination["benefit"])
+                        if st.session_state.get("_ci_navigation_ready", False):
+                            st.page_link(
+                                str(APP_DIR / destination["path"]), label=destination["action"],
+                                icon=destination["icon"], width="stretch",
+                            )
+            st.write("")
 
 
 def show_chart(figure, **kwargs):
@@ -247,3 +322,70 @@ def show_chart(figure, **kwargs):
     figure.update_xaxes(gridcolor="rgba(128,148,164,.2)", zerolinecolor="rgba(128,148,164,.2)")
     figure.update_yaxes(gridcolor="rgba(128,148,164,.2)", zerolinecolor="rgba(128,148,164,.2)")
     return st.plotly_chart(figure, **kwargs)
+
+
+def get_active_dataset_id() -> str:
+    """Return the currently selected dataset id from session state."""
+    return st.session_state.get("active_dataset_id", "online_retail")
+
+
+def set_active_dataset_id(dataset_id: str):
+    """Set the active dataset id in session state."""
+    st.session_state["active_dataset_id"] = dataset_id
+
+
+def get_active_dataset_metadata() -> dict:
+    """Retrieve metadata for the currently active dataset."""
+    from customerinsight.datasets import get_dataset_metadata
+    active_id = get_active_dataset_id()
+    meta = get_dataset_metadata(active_id)
+    if meta is None and active_id != "online_retail":
+        set_active_dataset_id("online_retail")
+        meta = get_dataset_metadata("online_retail")
+    return meta or {}
+
+
+@st.cache_data(show_spinner=False)
+def _cached_load_transactions(dataset_id: str):
+    from customerinsight.datasets import load_dataset_transactions
+    return load_dataset_transactions(dataset_id)
+
+
+def load_active_transactions():
+    """Load cleaned transactions for the currently active dataset."""
+    active_id = get_active_dataset_id()
+    try:
+        return _cached_load_transactions(active_id)
+    except Exception:
+        set_active_dataset_id("online_retail")
+        return _cached_load_transactions("online_retail")
+
+
+def render_dataset_banner():
+    """Render a clean information banner showing the active dataset and quick switch."""
+    meta = get_active_dataset_metadata()
+    if not meta:
+        return
+
+    name = meta.get("display_name", meta.get("dataset_id", "Dataset"))
+    rows = meta.get("accepted_rows", 0)
+    customers = meta.get("unique_customers", 0)
+    currency = meta.get("currency", "GBP")
+    is_builtin = meta.get("is_builtin", False)
+    badge = "Benchmark Dataset" if is_builtin else "Custom Dataset"
+
+    st.markdown(
+        f"""<div style="display:flex; justify-content:space-between; align-items:center;
+        background:var(--ci-surface); border:1px solid var(--ci-line); border-radius:10px;
+        padding:.6rem 1rem; margin-bottom:1.25rem;">
+            <div style="display:flex; align-items:center; gap:.75rem; flex-wrap:wrap;">
+                <span style="font-weight:650; color:var(--ci-text);">📊 Active Dataset: {escape(name)}</span>
+                <span class="ci-badge">{badge}</span>
+                <span style="color:var(--ci-muted); font-size:.85rem;">• {rows:,} transactions</span>
+                <span style="color:var(--ci-muted); font-size:.85rem;">• {customers:,} customers</span>
+                <span style="color:var(--ci-muted); font-size:.85rem;">• Currency: {escape(currency)}</span>
+            </div>
+        </div>""",
+        unsafe_allow_html=True,
+    )
+

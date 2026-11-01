@@ -84,9 +84,12 @@ def test_dashboard_registers_every_page_and_links_to_each_workspace(tmp_path, mo
         "pages/research_overview.py", "pages/retail_data_explorer.py",
         "pages/rfm_intelligence.py", "customer_insights.py",
         "pages/research_findings.py", "pages/model_validation_studio.py",
-        "pages/research_health.py",
+        "pages/research_health.py", "pages/data_workspace.py",
+        "pages/revenue_analytics.py", "pages/product_intelligence.py",
+        "pages/predictive_intelligence.py", "pages/ai_data_assistant.py",
+        "pages/business_insights_page.py", "pages/reports_exports.py",
     }
-    assert len(app.get("page_link")) == 6
+    assert len(app.get("page_link")) == 12
     # Missing local research files must leave all workspaces accessible.
     assert len(app.metric) == 4
 

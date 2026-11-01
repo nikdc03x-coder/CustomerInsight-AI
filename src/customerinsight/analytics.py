@@ -106,7 +106,9 @@ def get_revenue_trend(df: pd.DataFrame, freq: str = "M") -> pd.DataFrame:
     if "line_total" not in temp:
         temp["line_total"] = temp["quantity"] * temp["unit_price"]
 
-    temp["period"] = temp["order_date"].dt.to_period(freq).dt.to_timestamp()
+    # Period frequency normalization (e.g. ME -> M)
+    norm_freq = "M" if freq.upper() in ("ME", "M") else freq
+    temp["period"] = temp["order_date"].dt.to_period(norm_freq).dt.to_timestamp()
 
     trend = (
         temp.groupby("period")
