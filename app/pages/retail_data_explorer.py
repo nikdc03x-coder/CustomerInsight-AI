@@ -17,7 +17,15 @@ RAW_FILE = ROOT / "data/raw/Online Retail.xlsx"
 def load_transactions():
     """Read the original workbook without modifying the source file."""
 
-    data = pd.read_excel(RAW_FILE, engine="openpyxl")
+    data = pd.read_excel(
+        RAW_FILE,
+        engine='openpyxl',
+        dtype={
+            'InvoiceNo': 'string',
+            'StockCode': 'string',
+            'CustomerID': 'string',
+        },
+    )
     data["InvoiceDate"] = pd.to_datetime(
         data["InvoiceDate"], errors="coerce"
     )

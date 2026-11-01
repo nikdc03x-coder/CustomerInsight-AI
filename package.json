@@ -1,0 +1,20 @@
+{
+  "name": "customerinsight-ai",
+  "version": "0.1.0",
+  "description": "Exploratory customer-segmentation research and Streamlit dashboard",
+  "scripts": {
+    "dev": "node scripts/start-ui.js",
+    "start": "node scripts/start-ui.js",
+    "ui": "node scripts/start-ui.js"
+  },
+  "keywords": [
+    "customer-segmentation",
+    "rfm",
+    "streamlit",
+    "machine-learning",
+    "clustering"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+

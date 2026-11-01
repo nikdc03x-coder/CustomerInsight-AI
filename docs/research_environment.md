@@ -1,6 +1,6 @@
 # CustomerInsight AI — Research Environment
 
-Generated (UTC): 2026-10-17T14:55:17.451458+00:00
+Generated (UTC): 2026-11-01T12:55:31.393884+00:00
 
 ## System
 
@@ -16,10 +16,14 @@ Generated (UTC): 2026-10-17T14:55:17.451458+00:00
 | pandas | 3.0.6 |
 | scipy | 1.18.1 |
 | scikit-learn | 1.9.1 |
-| matplotlib | Not installed |
+| matplotlib | 3.11.2 |
 | plotly | 6.9.0 |
 | streamlit | 1.66.0 |
-| jupyter | Not installed |
+| jupyterlab | 4.6.4 |
+| openpyxl | 3.1.5 |
+| nbformat | 5.11.1 |
+| nbclient | 0.11.0 |
+| ipykernel | 7.4.0 |
 | pytest | 9.1.1 |
 
 ## Reproducibility Notes
