@@ -124,3 +124,4 @@ customerinsight-ai/
 └── data/
     └── datasets/                   # Parquet cache and SQLite registry
 ```
+# CustomerInsight-AI
