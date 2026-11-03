@@ -378,3 +378,17 @@ def run_consistency_checks(root: Path) -> pd.DataFrame:
             })
 
     return pd.DataFrame(findings)
+
+
+def audit_dashboard(root: Path = Path.cwd()) -> pd.DataFrame:
+    """Compatibility wrapper for the original dashboard audit.
+
+    Returns the DataFrame produced by :func:`run_research_audit`.
+
+    Args:
+        root: The root directory of the project or data. Defaults to the current working directory.
+
+    Returns:
+        pd.DataFrame: The audit results DataFrame.
+    """
+    return run_research_audit(root)

@@ -1,4 +1,5 @@
-"""Data hygiene, validation, and cleaning rules for canonical transactions."""
+"""Data hygiene, validation, and cleaning rules for canonical transactions.
+"""
 
 from dataclasses import dataclass, asdict
 from typing import Any
@@ -24,7 +25,8 @@ class CleaningSummary:
 
 
 def audit_data_quality(df: pd.DataFrame) -> dict[str, Any]:
-    """Inspect canonical or pre-canonical DataFrame for data hygiene metrics."""
+    """Inspect canonical or pre-canonical DataFrame for data hygiene metrics.
+    """
     total_rows = len(df)
     if total_rows == 0:
         return {
@@ -68,10 +70,16 @@ def clean_canonical_transactions(
     original_count = len(df)
     if original_count == 0:
         empty_summary = CleaningSummary(
-            original_rows=0, accepted_rows=0, rejected_rows=0,
-            missing_customer_ids=0, cancellation_rows=0,
-            nonpositive_quantities=0, nonpositive_prices=0,
-            invalid_dates=0, duplicate_rows=0, rejection_breakdown={},
+            original_rows=0,
+            accepted_rows=0,
+            rejected_rows=0,
+            missing_customer_ids=0,
+            cancellation_rows=0,
+            nonpositive_quantities=0,
+            nonpositive_prices=0,
+            invalid_dates=0,
+            duplicate_rows=0,
+            rejection_breakdown={},
         )
         return df.copy(), df.copy(), empty_summary
 
@@ -134,3 +142,4 @@ def clean_canonical_transactions(
     )
 
     return accepted_df, rejected_df, summary
+

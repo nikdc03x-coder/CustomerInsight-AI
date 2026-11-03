@@ -12,7 +12,7 @@ from dashboard_ui import page_header, show_chart
 from k2_diagnostics import show_k2_diagnostics
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 RESULTS_FILE = ROOT / "results/experiments/model_validation_results.csv"
 
 METRICS = {
@@ -249,8 +249,9 @@ def compare_at_k(data):
     )
 
 
-def main():
-    page_header(
+st.header("When a High Score Can Be Misleading")
+
+page_header(
         'Research & evidence / Model choices', 'Model validation',
         'Explore how different model settings change the customer groups, and why a high score needs context.',
         purpose='Compare preprocessing methods and group counts, examine the two-group result and download the saved experiments.',

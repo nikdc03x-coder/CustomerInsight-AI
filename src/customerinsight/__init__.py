@@ -44,7 +44,7 @@ from customerinsight.ai_assistant import (
     AssistantResponse,
     TOOL_REGISTRY,
 )
-from customerinsight.insights_engine import (
+from .insights_engine import (
     generate_business_insights,
     BusinessInsight,
 )
@@ -87,3 +87,4 @@ __all__ = [
     "generate_executive_brief_markdown",
     "export_customer_segments_csv",
 ]
+

@@ -11,7 +11,7 @@ from dashboard_ui import show_chart
 
 
 # Find the project root and saved experimental results.
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 
 DIAGNOSTICS = (
     ROOT / "results/experiments/k2_cluster_diagnostics.csv"

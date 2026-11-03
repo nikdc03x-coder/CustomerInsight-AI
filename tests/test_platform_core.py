@@ -153,3 +153,4 @@ def test_executive_report_generation(sample_transaction_df):
     assert "# Customer Intelligence Executive Brief" in report_md
     assert "Total Gross Revenue" in report_md
     assert "Customer Segmentation Breakdown" in report_md
+

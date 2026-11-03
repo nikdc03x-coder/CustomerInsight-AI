@@ -29,8 +29,8 @@ def render_priority_badge(priority: str):
 
 
 @st.cache_data(show_spinner="Evaluating statistical business insights...")
-def _get_insights(df: pd.DataFrame, currency: str = "GBP"):
-    return generate_business_insights(df, currency=currency)
+def _get_insights(df: pd.DataFrame):
+    return generate_business_insights(df)
 
 
 def main():
@@ -57,7 +57,7 @@ def main():
         st.warning("Active dataset has no transaction records.")
         return
 
-    insights = _get_insights(df, currency=currency)
+    insights = _get_insights(df)
 
     # Filter controls
     f_col1, f_col2 = st.columns([1, 1])
