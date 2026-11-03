@@ -1,0 +1,9 @@
+{
+  "name": "customerinsight-ai",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/start-ui.js"
+  }
+}
+
