@@ -32,5 +32,8 @@ dev = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.poetry]
+packages = [{ include = "customerinsight", from = "src" }]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
