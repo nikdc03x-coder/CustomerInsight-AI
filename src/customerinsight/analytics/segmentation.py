@@ -46,7 +46,7 @@ def segment_customers(df: pd.DataFrame | None = None, n_clusters: int = 4) -> pd
     scaled = (features - mins) / (maxs - mins)
 
     from sklearn.cluster import KMeans
-    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init="auto")
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
     labels = kmeans.fit_predict(scaled)
     df = df.copy()
     df["segment"] = labels
