@@ -1,4 +1,3 @@
-
 """Interactive exploration of model validation experiments."""
 
 from pathlib import Path
@@ -10,7 +9,6 @@ import streamlit as st
 from dashboard_ui import page_header, show_chart
 
 from k2_diagnostics import show_k2_diagnostics
-
 
 ROOT = Path(__file__).resolve().parents[3]
 RESULTS_FILE = ROOT / "results/experiments/model_validation_results.csv"
@@ -35,7 +33,6 @@ METRICS = {
         ),
     },
 }
-
 
 @st.cache_data(show_spinner="Loading model validation results...")
 def load_experiments():
@@ -140,7 +137,6 @@ def explain_experiment(data, metric, view):
 
     if metric == "silhouette":
         best = data.loc[data["silhouette"].idxmax()]
-
         finding = (
             f"The highest silhouette score among the displayed "
             f"configurations is **{best['silhouette']:.4f}**, "
@@ -150,7 +146,6 @@ def explain_experiment(data, metric, view):
 
     elif metric == "ari_vs_baseline":
         best = data.loc[data["ari_vs_baseline"].idxmax()]
-
         finding = (
             f"The configuration with the highest agreement "
             f"with the original baseline is "
@@ -236,154 +231,136 @@ def compare_at_k(data):
     )
 
     best = selected.loc[selected["silhouette"].idxmax()]
-
     st.info(
         f"For K = {chosen_k}, **{best['preprocessing']}** "
         f"achieved the highest tested silhouette "
         f"({best['silhouette']:.4f})."
     )
-
     st.caption(
         "This comparison concerns cluster separation, "
         "not overall business quality."
     )
 
+# --- Main page rendering ----------------------------------------------------
+# Show warning if results are missing before any UI elements
+if not RESULTS_FILE.is_file():
+    st.warning(
+        "Phase 08 results are not available. "
+        "Run model_validation.ipynb first."
+    )
+    st.stop()
 
+# Header and description
 st.header("When a High Score Can Be Misleading")
-
 page_header(
-        'Research & evidence / Model choices', 'Model validation',
-        'Explore how different model settings change the customer groups, and why a high score needs context.',
-        purpose='Compare preprocessing methods and group counts, examine the two-group result and download the saved experiments.',
-        benefit='See whether an apparent improvement reflects useful differentiation or a small group of exceptional purchasers.',
-        technical='K is the number of groups. Silhouette measures separation, ARI measures agreement with the baseline, and inertia measures within-group squared distances.',
-    )
+    'Research & evidence / Model choices', 'Model validation',
+    'Explore how different model settings change the customer groups, and why a high score needs context.',
+    purpose='Compare preprocessing methods and group counts, examine the two-group result and download the saved experiments.',
+    benefit='See whether an apparent improvement reflects useful differentiation or a small group of exceptional purchasers.',
+    technical='K is the number of groups. Silhouette measures separation, ARI measures agreement with the baseline, and inertia measures within-group squared distances.',
+)
 
-    if not RESULTS_FILE.is_file():
-        st.warning(
-            "Phase 08 results are not available. "
-            "Run model_validation.ipynb first."
+# Load experiments (will raise if file missing, already handled above)
+try:
+    results = load_experiments()
+except (OSError, ValueError) as error:
+    st.error(f"Could not load validation results: {error}")
+    st.stop()
+
+best = results.loc[results["silhouette"].idxmax()]
+
+metrics = st.columns(4)
+metrics[0].metric("Configurations tested", len(results))
+metrics[1].metric(
+    "Cluster counts tested",
+    results["clusters"].nunique(),
+)
+metrics[2].metric(
+    "Preprocessing methods",
+    results["preprocessing"].nunique(),
+)
+metrics[3].metric(
+    "Highest silhouette",
+    f"{best['silhouette']:.4f}",
+)
+
+st.caption(
+    "These metrics summarize saved experiments, "
+    "not live model retraining."
+)
+
+st.divider()
+
+explore_tab, comparison_tab, diagnostic_tab, evidence_tab = st.tabs([
+    "Explore Configurations",
+    "Compare Methods",
+    "K=2 Investigation",
+    "Research Evidence",
+])
+
+with explore_tab:
+    st.subheader("Investigate model sensitivity")
+    left, right = st.columns(2)
+    with left:
+        metric = st.selectbox(
+            "What would you like to measure?",
+            list(METRICS),
+            format_func=lambda item: METRICS[item]["label"],
         )
-        st.stop()
-
-    try:
-        results = load_experiments()
-    except (OSError, ValueError) as error:
-        st.error(f"Could not load validation results: {error}")
-        st.stop()
-
-    best = results.loc[results["silhouette"].idxmax()]
-
-    metrics = st.columns(4)
-
-    metrics[0].metric("Configurations tested", len(results))
-    metrics[1].metric(
-        "Cluster counts tested",
-        results["clusters"].nunique(),
-    )
-    metrics[2].metric(
-        "Preprocessing methods",
-        results["preprocessing"].nunique(),
-    )
-    metrics[3].metric(
-        "Highest silhouette",
-        f"{best['silhouette']:.4f}",
-    )
-
-    st.caption(
-        "These metrics summarize saved experiments, "
-        "not live model retraining."
-    )
-
-    st.divider()
-
-
-    explore_tab, comparison_tab, diagnostic_tab, evidence_tab = st.tabs([
-        "Explore Configurations",
-        "Compare Methods",
-        "K=2 Investigation",
-        "Research Evidence",
-    ])
-
-
-    with explore_tab:
-        st.subheader("Investigate model sensitivity")
-
-        left, right = st.columns(2)
-
-        with left:
-            metric = st.selectbox(
-                "What would you like to measure?",
-                list(METRICS),
-                format_func=lambda item: METRICS[item]["label"],
-            )
-
-        with right:
-            chart_type = st.selectbox(
-                "Visualization style",
-                ["Line", "Grouped bar", "Scatter", "Heatmap"],
-            )
-
-        methods = st.multiselect(
-            "Select preprocessing methods",
-            sorted(results["preprocessing"].unique()),
-            default=sorted(results["preprocessing"].unique()),
+    with right:
+        chart_type = st.selectbox(
+            "Visualization style",
+            ["Line", "Grouped bar", "Scatter", "Heatmap"],
         )
-
-        filtered = results[
-            results["preprocessing"].isin(methods)
-        ]
-
-        if filtered.empty:
-            st.info("Select at least one preprocessing method.")
-        else:
-            figure = create_chart(filtered, metric, chart_type)
-
-            show_chart(
-                figure,
-                width="stretch",
-                config={"displaylogo": False},
-            )
-
-            explain_experiment(filtered, metric, chart_type)
-
-    with comparison_tab:
-        compare_at_k(results)
-
-    with diagnostic_tab:
-        show_k2_diagnostics()
-
-
-    with evidence_tab:
-        st.subheader("Explore the original experiment results")
-
-        st.dataframe(
-            results,
-            hide_index=True,
+    methods = st.multiselect(
+        "Select preprocessing methods",
+        sorted(results["preprocessing"].unique()),
+        default=sorted(results["preprocessing"].unique()),
+    )
+    filtered = results[results["preprocessing"].isin(methods)]
+    if filtered.empty:
+        st.info("Select at least one preprocessing method.")
+    else:
+        figure = create_chart(filtered, metric, chart_type)
+        show_chart(
+            figure,
             width="stretch",
+            config={"displaylogo": False},
         )
+        explain_experiment(filtered, metric, chart_type)
 
-        st.download_button(
-            "Download validation results",
-            data=results.to_csv(index=False),
-            file_name="model_validation_results.csv",
-            mime="text/csv",
+with comparison_tab:
+    compare_at_k(results)
+
+with diagnostic_tab:
+    show_k2_diagnostics()
+
+with evidence_tab:
+    st.subheader("Explore the original experiment results")
+    st.dataframe(
+        results,
+        hide_index=True,
+        width="stretch",
+    )
+    st.download_button(
+        "Download validation results",
+        data=results.to_csv(index=False),
+        file_name="model_validation_results.csv",
+        mime="text/csv",
+    )
+    with st.expander("Research limitations", expanded=True):
+        st.write(
+            "These experiments use one historical retail dataset "
+            "and a limited set of preprocessing choices."
         )
-
-        with st.expander("Research limitations", expanded=True):
-            st.write(
-                "These experiments use one historical retail dataset "
-                "and a limited set of preprocessing choices."
-            )
-            st.write(
-                "Silhouette scores describe separation, not the "
-                "practical usefulness of a customer segment."
-            )
-            st.write(
-                "Parameter sensitivity is not the same as "
-                "independent model validation."
-            )
-
+        st.write(
+            "Silhouette scores describe separation, not the "
+            "practical usefulness of a customer segment."
+        )
+        st.write(
+            "Parameter sensitivity is not the same as "
+            "independent model validation."
+        )
 
 if __name__ == "__main__":
     main()

@@ -5,6 +5,8 @@ ranking based on the canonical transaction schema.
 """
 
 import pandas as pd
+import streamlit as st
+from typing import Literal
 from typing import Literal
 
 
@@ -20,6 +22,7 @@ def _validate_transactions(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+@st.cache_data(show_spinner="Calculating revenue KPIs…")
 def get_revenue_kpis(df: pd.DataFrame | None = None) -> dict:
     """Calculate core revenue KPIs.
 
@@ -50,6 +53,7 @@ def get_revenue_kpis(df: pd.DataFrame | None = None) -> dict:
     }
 
 
+@st.cache_data(show_spinner="Calculating revenue trend…")
 def get_revenue_trend(df: pd.DataFrame | None = None, freq: Literal["D", "W", "M"] = "M") -> pd.DataFrame:
     """Return revenue aggregated by the given frequency.
 

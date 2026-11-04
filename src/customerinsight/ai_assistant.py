@@ -67,7 +67,7 @@ def tool_dataset_summary(dataset_id: str) -> dict[str, Any]:
 def tool_top_customers(dataset_id: str, n: int = 10) -> dict[str, Any]:
     """List the top N customers by total monetary spending."""
     df = load_dataset_transactions(dataset_id)
-    top = get_top_customers(df, top_n=n)
+    top = get_top_customers(df, top_n=n).rename(columns={"total_orders": "orders"})
     return {
         "top_customers": top.to_dict(orient="records"),
         "currency": str(df["currency"].iloc[0]) if "currency" in df and not df.empty else "GBP",

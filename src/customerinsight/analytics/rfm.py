@@ -14,8 +14,10 @@ included because the test suite expects only the raw RFM values.
 """
 
 import pandas as pd
+import streamlit as st
 from datetime import datetime
 
+@st.cache_data(show_spinner="Calculating RFM…")
 def calculate_rfm(
     df: pd.DataFrame,
     customer_id_col: str = "customer_id",

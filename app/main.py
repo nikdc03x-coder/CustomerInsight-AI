@@ -15,6 +15,16 @@ APP_DIR = Path(__file__).resolve().parent
 
 
 def main():
+    """Entry point for the Streamlit app with simple performance logging.
+
+    The function measures the total time taken to initialise the UI and
+    navigates to the selected page. The elapsed time is displayed in the
+    sidebar as a caption, allowing us to see cold‑start vs. warm‑start
+    timings directly in the running app.
+    """
+    import time
+    _start = time.perf_counter()
+
     """Keep every analytical and research workspace accessible from the sidebar."""
     st.set_page_config(
         page_title="CustomerInsight AI", page_icon=":material/monitoring:",
@@ -59,6 +69,9 @@ def main():
     }, position="sidebar")
     st.session_state["_ci_navigation_ready"] = True
     selected.run()
+    # Log elapsed time for UI init
+    _elapsed = time.perf_counter() - _start
+    st.sidebar.caption(f"⚡️ Init time: {_elapsed:.2f}s")
 
     with st.sidebar:
         st.divider()
