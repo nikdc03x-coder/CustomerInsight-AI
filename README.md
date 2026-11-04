@@ -6,7 +6,7 @@ The platform combines robust statistical machine learning, empirical Bayesian re
 
 ---
 
-## 🌟 Platform Capabilities
+##  Platform Capabilities
 
 ### 1. Multi-Dataset Workspace (`pages/data_workspace.py`)
 - **Universal Ingestion**: Supports `.csv`, `.xlsx`, and `.xls` transaction uploads.
@@ -50,7 +50,7 @@ The platform combines robust statistical machine learning, empirical Bayesian re
 
 ---
 
-## 🚀 Quickstart & Installation
+##  Quickstart & Installation
 
 Python 3.11+ is required.
 
@@ -73,7 +73,7 @@ The application opens at `http://localhost:8501`.
 
 ---
 
-## 🧪 Testing & Verification
+##  Testing & Verification
 
 Run the comprehensive test suite (69 tests covering platform core, UI pages, and research benchmarks):
 
@@ -85,7 +85,7 @@ All 69 unit and integration tests pass with 100% success rate.
 
 ---
 
-## 📂 Repository Architecture
+##  Repository Architecture
 
 ```text
 customerinsight-ai/
