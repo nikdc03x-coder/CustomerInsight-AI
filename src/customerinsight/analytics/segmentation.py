@@ -66,9 +66,7 @@ def segment_customers(df: pd.DataFrame | None = None, n_clusters: int = 4) -> pd
     # Reorder columns as expected by UI/tests
     return summary[["segment_name", "total_spend", "customers", "revenue_share_pct", "median_monetary"]]
 
-    """Return a placeholder DataFrame for customer segments.
-    """
-    return pd.DataFrame()
+
 
 
 def compare_segments(df: pd.DataFrame | None = None) -> pd.DataFrame:
