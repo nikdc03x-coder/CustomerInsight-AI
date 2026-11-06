@@ -24,6 +24,8 @@ data/processed/*
 
 data/datasets/*
 !data/datasets/.gitkeep
+!data/datasets/online_retail/
+!data/datasets/online_retail/transactions.parquet
 
 # Generated research outputs
 results/figures/*
