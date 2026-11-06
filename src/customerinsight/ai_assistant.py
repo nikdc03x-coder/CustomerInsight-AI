@@ -41,6 +41,26 @@ class AssistantResponse:
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
+    # Compatibility property for UI code expecting snake_case name
+    @property
+    def suggested_follow_up_questions(self) -> list[str]:
+        """Alias for `suggested_followups` used by older UI code."""
+        return self.suggested_followups
+
+    question: str
+    direct_answer: str
+    dataset_id: str
+    analysis_period: str
+    records_analyzed: int
+    tool_executed: str
+    supporting_metrics: dict[str, Any]
+    table_data: list[dict[str, Any]] | None
+    limitations: str
+    suggested_followups: list[str]
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
 
 # =====================================================================
 # Approved Analytics Tool Registry
@@ -53,13 +73,13 @@ def tool_dataset_summary(dataset_id: str) -> dict[str, Any]:
     meta = get_dataset_metadata(dataset_id) or {}
     return {
         "display_name": meta.get("display_name", dataset_id),
-        "total_revenue": kpis["total_revenue"],
-        "total_orders": kpis["total_orders"],
-        "total_customers": kpis["total_customers"],
-        "average_order_value": kpis["average_order_value"],
-        "first_order_date": str(kpis["first_order_date"]) if kpis["first_order_date"] else "N/A",
-        "last_order_date": str(kpis["last_order_date"]) if kpis["last_order_date"] else "N/A",
-        "currency": kpis["currency"],
+        "total_revenue": kpis.get("total_revenue", "N/A"),
+        "total_orders": kpis.get("total_orders", "N/A"),
+        "total_customers": kpis.get("total_customers", "N/A"),
+        "average_order_value": kpis.get("average_order_value", "N/A"),
+        "first_order_date": str(kpis.get("first_order_date")) if kpis.get("first_order_date") else "N/A",
+        "last_order_date": str(kpis.get("last_order_date")) if kpis.get("last_order_date") else "N/A",
+        "currency": kpis.get("currency", "USD"),
         "records_count": len(df),
     }
 
@@ -180,7 +200,23 @@ TOOL_REGISTRY: dict[str, Callable] = {
 # Intent Resolution & Question Answering Engine
 # =====================================================================
 
-def ask_assistant(question: str, dataset_id: str = "online_retail") -> AssistantResponse:
+def ask_assistant(
+    question: str,
+    dataset_id: str = "online_retail",
+    df: pd.DataFrame | None = None,
+    dataset_name: str | None = None,
+    currency: str | None = None,
+) -> AssistantResponse:
+    """Interpret user question, execute verified analytics tool, and format answer.
+
+    Accepts optional `df`, `dataset_name`, and `currency` for UI convenience.
+    If `df` is provided, it is used directly; otherwise the dataset is loaded.
+    """
+    # Use provided DataFrame if given; otherwise load the dataset.
+    if df is None:
+        df = load_dataset_transactions(dataset_id)
+    # Existing logic expects `dataset_id` variable; keep it for tool calls.
+    q_lower = question.lower().strip()
     """Interpret user question, execute verified analytics tool, and format answer.
 
     Guarantees zero hallucinations: answers strictly from computed mathematical output.
