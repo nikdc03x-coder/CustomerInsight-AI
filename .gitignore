@@ -21,6 +21,7 @@ data/raw/*
 
 data/processed/*
 !data/processed/.gitkeep
+!data/processed/customer_rfm.csv
 
 data/datasets/*
 !data/datasets/.gitkeep
